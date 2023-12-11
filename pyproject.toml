@@ -1,9 +1,9 @@
 [project]
-name = "research-template"
+name = "ml-template"
 version = "0.1.0"
 description = "Add a short description here"
 authors = [
-    { name = "tubo213", email = "" }
+    { name = "JamiePlace", email = "jamieplace95@gmail.com" }
 ]
 dependencies = [
     "numpy>=1.24.4",
