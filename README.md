@@ -1,2 +1,2 @@
-# research-template
+# ml-template
 
