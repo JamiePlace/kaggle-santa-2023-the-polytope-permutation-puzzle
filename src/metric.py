@@ -1,10 +1,11 @@
 """Evaluation metric for Santa 2023."""
 
-import pandas as pd
 from ast import literal_eval
 from dataclasses import dataclass
-from sympy.combinatorics import Permutation
 from typing import Dict, List
+
+import pandas as pd
+from sympy.combinatorics import Permutation
 
 
 class ParticipantVisibleError(Exception):
