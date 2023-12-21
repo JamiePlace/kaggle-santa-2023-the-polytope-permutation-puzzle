@@ -1,6 +1,6 @@
 import logging
 from pathlib import Path
-import hydra
+import hydra  # type: ignore
 
 from src.conf import TrainConfig
 from src.generator.metrics.metric_generator import MetricGenerator
@@ -47,6 +47,5 @@ def main(cfg: TrainConfig):
         movesetDTO = moveset_generator.generate_moveset()
     return
 
-
 if __name__ == "__main__":
-    main()
+    main()  # type: ignore

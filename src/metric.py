@@ -2,13 +2,15 @@
 
 import logging
 import pandas as pd
-from ast import literal_eval
-from dataclasses import dataclass
-from sympy.combinatorics import Permutation
-from typing import Dict, List
 import datetime
 
+from ast import literal_eval
+from dataclasses import dataclass
+from typing import Dict, List
+from sympy.combinatorics import Permutation
+
 LOGGER = logging.getLogger()
+
 
 class ParticipantVisibleError(Exception):
     pass
