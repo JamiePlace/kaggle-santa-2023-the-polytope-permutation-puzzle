@@ -1,11 +1,14 @@
 """Evaluation metric for Santa 2023."""
 
+import logging
 import pandas as pd
 from ast import literal_eval
 from dataclasses import dataclass
 from sympy.combinatorics import Permutation
 from typing import Dict, List
+import datetime
 
+LOGGER = logging.getLogger()
 
 class ParticipantVisibleError(Exception):
     pass
@@ -56,6 +59,11 @@ def score(
             num_wildcards=sol.num_wildcards,
         )
 
+        if puzzle_id > 0:
+            break
+
+        LOGGER.info(f"Scoring puzzle: {puzzle_id}")
+
         # Score submission row
         total_num_moves += score_puzzle(
             puzzle_id, puzzle, getattr(sub, moves_column_name)
@@ -76,6 +84,7 @@ class Puzzle:
 
 
 def score_puzzle(puzzle_id, puzzle, sub_solution):
+    start = datetime.datetime.now()
     """Score the solution to a permutation puzzle."""
     # Apply submitted sequence of moves to the initial state, from left to right
     moves = sub_solution.split(".")
@@ -102,5 +111,8 @@ def score_puzzle(puzzle_id, puzzle, sub_solution):
             f"Submitted moves do not solve {puzzle_id}."
         )
 
+    end = datetime.datetime.now()
     # The score for this instance is the total number of moves needed to solve the puzzle
+    LOGGER.info(f"Time taken: { (end - start).microseconds}")
+
     return len(moves)

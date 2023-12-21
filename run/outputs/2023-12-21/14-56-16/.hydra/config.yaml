@@ -1,0 +1,6 @@
+dir:
+  data_dir: ./data/
+  processed_dir: ./processed_data/
+  output_dir: ./output/
+  model_dir: ./train/
+  sub_dir: .

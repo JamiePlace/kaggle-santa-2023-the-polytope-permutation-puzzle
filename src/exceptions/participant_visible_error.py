@@ -1,0 +1,2 @@
+class ParticipantVisibleError(Exception):
+    pass
