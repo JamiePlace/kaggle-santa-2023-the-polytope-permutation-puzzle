@@ -1,6 +1,0 @@
-dir:
-  data_dir: C:\\Users\\James\\Projects\\kaggle\\2023santa\\kaggle-santa-2023-the-polytope-permutation-puzzle/data/
-  processed_dir: C:\\Users\\James\\Projects\\kaggle\\2023santa\\kaggle-santa-2023-the-polytope-permutation-puzzle/processed_data/
-  output_dir: C:\\Users\\James\\Projects\\kaggle\\2023santa\\kaggle-santa-2023-the-polytope-permutation-puzzle/output/
-  model_dir: C:\\Users\\James\\Projects\\kaggle\\2023santa\\kaggle-santa-2023-the-polytope-permutation-puzzle/train/
-  sub_dir: C:\\Users\\James\\Projects\\kaggle\\2023santa\\kaggle-santa-2023-the-polytope-permutation-puzzle

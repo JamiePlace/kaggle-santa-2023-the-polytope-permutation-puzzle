@@ -13,6 +13,14 @@ class PuzzleSolverBase:
         # Apply submitted sequence of moves to the initial state, from left to right
         moves = sub_solution.split(".")
         state = puzzle.initial_state
+
+        LOGGER.debug(f"initial state: \t{state}")
+        LOGGER.debug(f"solution state: \t{puzzle.solution_state}")
+        LOGGER.debug(f"wildcards allowed: {puzzle.num_wildcards}")
+        LOGGER.debug(f"allowed moves: {list(puzzle.allowed_moves.keys())}")
+        LOGGER.debug(f"testing moves: {moves}")
+
+
         for m in moves:
             power = 1
             if m[0] == "-":

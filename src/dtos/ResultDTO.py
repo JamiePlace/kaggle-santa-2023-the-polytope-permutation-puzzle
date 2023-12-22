@@ -1,5 +1,6 @@
 from dataclasses import dataclass
 import datetime
+import pandas as pd
 
 
 @dataclass
@@ -10,3 +11,4 @@ class ResultDTO:
     puzzle_id: int
     score: float
     time_taken: datetime.timedelta
+    sub_solution: pd.DataFrame

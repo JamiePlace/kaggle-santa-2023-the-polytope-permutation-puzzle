@@ -56,8 +56,8 @@ class MetricGenerator:
         assert puzzle_id == getattr(sub, series_id_column_name)
 
         # break out early if you dont want to wait for ages
-        # if puzzle_id > 1:
-        #     return ResultDTO(puzzle_id, 0.0, datetime.timedelta(0))
+        if puzzle_id > 1:
+            return ResultDTO(puzzle_id, 0.0, datetime.timedelta(0), {})
 
         puzzle = PuzzleDTO(
             puzzle_id=puzzle_id,
@@ -69,9 +69,13 @@ class MetricGenerator:
 
         # setting up for future puzzle solvers
         start = datetime.datetime.now()
-        puzzle_result = self.puzzle_solver.score_puzzle(puzzle, getattr(sub, moves_column_name))
+        sub_solution = getattr(sub, moves_column_name)
+        puzzle_result = self.puzzle_solver.score_puzzle(puzzle, sub_solution)
 
-        resultDTO = ResultDTO(puzzle_id, puzzle_result, (datetime.datetime.now() - start))
+        resultDTO = ResultDTO(puzzle_id,
+                              puzzle_result,
+                              (datetime.datetime.now() - start),
+                              sub_solution)
         MetricsReporter().report_metrics_for_result(resultDTO)
 
         return resultDTO

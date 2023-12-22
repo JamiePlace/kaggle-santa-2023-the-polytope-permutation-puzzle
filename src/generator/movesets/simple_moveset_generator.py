@@ -18,7 +18,7 @@ class SimpleMoveSetGenerator(MoveSetGeneratorBase):
 
         solution = pd.read_csv(root / "data/puzzles.csv")
         submission = pd.read_csv(root / "submission.csv")
-        puzzle_path = pd.read_csv(root / "data/puzzle_info.csv", index_col="puzzle_type")
+        puzzle_info = pd.read_csv(root / "data/puzzle_info.csv", index_col="puzzle_type")
 
-        moveset = MovesetDTO(solution, submission, puzzle_path)
+        moveset = MovesetDTO(solution, submission, puzzle_info)
         return moveset
