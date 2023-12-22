@@ -26,10 +26,15 @@ class MetricGenerator:
 
     results: ResultsDTO
     puzzle_solver: PuzzleSolverBase
+    specific_puzzle: int
 
-    def __init__(self, puzzle_solver: PuzzleSolverBase):
+    def __init__(self, puzzle_solver: PuzzleSolverBase, specific_puzzle):
         self.results = ResultsDTO()
         self.puzzle_solver = puzzle_solver
+        if specific_puzzle is not None:
+            self.specific_puzzle = specific_puzzle
+        else:
+            self.specific_puzzle = None
 
     def generate_score(self, ms: MovesetDTO) -> ResultsDTO:
         """
@@ -39,7 +44,8 @@ class MetricGenerator:
 
         for sol, sub in zip(ms.solution.itertuples(), ms.submission.itertuples()):
             puzzle_score = (
-                self.__generate_score_for_puzzle(ms.puzzle_info, sol, sub, ms.series_id_column_name, ms.moves_column_name))
+                self.__generate_score_for_puzzle(ms.puzzle_info, sol, sub, ms.series_id_column_name,
+                                                 ms.moves_column_name))
             self.results.add_result(puzzle_score)
 
         return self.results
@@ -56,8 +62,9 @@ class MetricGenerator:
         assert puzzle_id == getattr(sub, series_id_column_name)
 
         # break out early if you dont want to wait for ages
-        if puzzle_id > 1:
-            return ResultDTO(puzzle_id, 0.0, datetime.timedelta(0), {})
+        if self.specific_puzzle is not None:
+            if puzzle_id != self.specific_puzzle:
+                return ResultDTO(puzzle_id, 0.0, False, datetime.timedelta(0), {})
 
         puzzle = PuzzleDTO(
             puzzle_id=puzzle_id,
@@ -68,14 +75,8 @@ class MetricGenerator:
         )
 
         # setting up for future puzzle solvers
-        start = datetime.datetime.now()
         sub_solution = getattr(sub, moves_column_name)
-        puzzle_result = self.puzzle_solver.score_puzzle(puzzle, sub_solution)
-
-        resultDTO = ResultDTO(puzzle_id,
-                              puzzle_result,
-                              (datetime.datetime.now() - start),
-                              sub_solution)
+        resultDTO = self.puzzle_solver.score_puzzle(puzzle, sub_solution)
         MetricsReporter().report_metrics_for_result(resultDTO)
 
         return resultDTO

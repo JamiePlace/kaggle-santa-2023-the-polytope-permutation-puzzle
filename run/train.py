@@ -24,20 +24,25 @@ logging.basicConfig(
 def main(cfg: TrainConfig):
     LOGGER.info(f"Project name: {PROJECT_NAME} \n")
 
-    # maybe these can be defined by enums and stored in the cfg, i.e passed in by yaml file
     logging.getLogger().setLevel(logging.DEBUG)
+
+    generations = cfg.config.generations
+    specific_puzzle = cfg.config.specific_puzzle
+
+    # maybe these can be defined by enums and stored in the cfg, i.e passed in by yaml file
     moveset_generator: MoveSetGeneratorBase = SimpleMoveSetGenerator(cfg, {})
     puzzle_solver: PuzzleSolverBase = SamplePuzzleSolver()
-    metric_generator = MetricGenerator(puzzle_solver)
+    metric_generator = MetricGenerator(puzzle_solver, specific_puzzle)
     metrics_reporter = MetricsReporter()
 
-    generations = 1
 
     # set up initial data
     movesetDTO = moveset_generator.generate_moveset()
 
     # iterate and solve
     for x in range(generations):
+        LOGGER.debug(f"--- Generation: {x} ---\n")
+
         # score the move set
         resultsDTO = metric_generator.generate_score(movesetDTO)
         metrics_reporter.report_metrics_for_results(resultsDTO)

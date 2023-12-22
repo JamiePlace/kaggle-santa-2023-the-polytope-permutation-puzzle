@@ -3,3 +3,4 @@ processed_dir: ./processed_data/
 output_dir: ./output/
 model_dir: ./train/
 sub_dir: .
+specific_puzzle: 0

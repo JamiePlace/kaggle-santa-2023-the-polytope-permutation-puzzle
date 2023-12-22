@@ -10,7 +10,12 @@ class DirConfig:
     model_dir: str
     sub_dir: str
 
+@dataclass
+class RunConfig:
+    specific_puzzle: int
+    generations: int
 
 @dataclass
 class TrainConfig:
     dir: DirConfig
+    config: RunConfig

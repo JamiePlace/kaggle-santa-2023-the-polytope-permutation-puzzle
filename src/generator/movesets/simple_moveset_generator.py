@@ -11,7 +11,7 @@ LOGGER = logging.getLogger()
 
 class SimpleMoveSetGenerator(MoveSetGeneratorBase):
     """
-    OOTB movset generator taking moveset from file.
+    OOTB moveset generator taking moveset from file.
     """
     def generate_moveset(self):
         root = get_project_root()

@@ -10,5 +10,6 @@ class ResultDTO:
     """
     puzzle_id: int
     score: float
+    solved: bool
     time_taken: datetime.timedelta
     sub_solution: pd.DataFrame
