@@ -1,11 +1,15 @@
 import logging
 from pathlib import Path
-
 import hydra  # type: ignore
-import pandas as pd
 
 from src.conf import TrainConfig
-from src.metric import score
+from src.generator.metrics.metric_generator import MetricGenerator
+from src.generator.movesets.generative_moveset_generator import GenerativeMoveSetGenerator
+from src.generator.movesets.moveset_generator_base import MoveSetGeneratorBase
+from src.generator.movesets.simple_moveset_generator import SimpleMoveSetGenerator
+from src.puzzles.puzzle_solver_base import PuzzleSolverBase
+from src.puzzles.sample_puzzle_solver import SamplePuzzleSolver
+from src.reporter.metric_reporter import MetricsReporter
 
 LOGGER = logging.getLogger(Path(__file__).name)
 PROJECT_NAME = "Santa-2023"
@@ -18,21 +22,30 @@ logging.basicConfig(
 
 @hydra.main(config_path="conf", config_name="train", version_base="1.2")
 def main(cfg: TrainConfig):
-    LOGGER.info(f"Project name: {PROJECT_NAME}")
-    submission = pd.read_csv(str(Path(cfg.dir.sub_dir) / "submission.csv"))
-    solution = pd.read_csv(str(Path(cfg.dir.data_dir) / "puzzles.csv"))
+    LOGGER.info(f"Project name: {PROJECT_NAME} \n")
 
-    score_val = score(
-        solution,
-        submission,
-        series_id_column_name="id",
-        moves_column_name="moves",
-        puzzle_info_path=str(Path(cfg.dir.data_dir) / "puzzle_info.csv"),
-    )
-    LOGGER.info(f"Score: {score_val}")
+    # maybe these can be defined by enums and stored in the cfg, i.e passed in by yaml file
+    logging.getLogger().setLevel(logging.DEBUG)
+    moveset_generator: MoveSetGeneratorBase = SimpleMoveSetGenerator(cfg, {})
+    puzzle_solver: PuzzleSolverBase = SamplePuzzleSolver()
+    metric_generator = MetricGenerator(puzzle_solver)
+    metrics_reporter = MetricsReporter()
 
-    return 0
+    generations = 1
 
+    # set up initial data
+    movesetDTO = moveset_generator.generate_moveset()
+
+    # iterate and solve
+    for x in range(generations):
+        # score the move set
+        resultsDTO = metric_generator.generate_score(movesetDTO)
+        metrics_reporter.report_metrics_for_results(resultsDTO)
+
+        # feed the score into generating the next moveset
+        moveset_generator = GenerativeMoveSetGenerator(cfg, resultsDTO)
+        movesetDTO = moveset_generator.generate_moveset()
+    return
 
 if __name__ == "__main__":
     main()  # type: ignore
