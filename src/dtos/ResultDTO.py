@@ -13,3 +13,4 @@ class ResultDTO:
     solved: bool
     time_taken: datetime.timedelta
     sub_solution: pd.DataFrame
+    num_wrong_facelets: int

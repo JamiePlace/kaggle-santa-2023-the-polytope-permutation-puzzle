@@ -3,6 +3,8 @@ from pathlib import Path
 import hydra  # type: ignore
 
 from src.conf import TrainConfig
+from src.dtos import EvolutionResultsDTO, ResultsDTO, MovesetDTO
+from src.dtos.EvolutionResultsDTO import EvolutionResultsDTO
 from src.generator.metrics.metric_generator import MetricGenerator
 from src.generator.movesets.generative_moveset_generator import GenerativeMoveSetGenerator
 from src.generator.movesets.moveset_generator_base import MoveSetGeneratorBase
@@ -35,21 +37,27 @@ def main(cfg: TrainConfig):
     metric_generator = MetricGenerator(puzzle_solver, specific_puzzle)
     metrics_reporter = MetricsReporter()
 
-
     # set up initial data
-    movesetDTO = moveset_generator.generate_moveset()
+    movesetDTO: MovesetDTO = moveset_generator.generate_moveset()
+
+    # generation history
+    generations_data: EvolutionResultsDTO = EvolutionResultsDTO(generations)
 
     # iterate and solve
     for x in range(generations):
         LOGGER.debug(f"--- Generation: {x} ---\n")
 
         # score the move set
-        resultsDTO = metric_generator.generate_score(movesetDTO)
+        resultsDTO: ResultsDTO = metric_generator.generate_score(movesetDTO)
         metrics_reporter.report_metrics_for_results(resultsDTO)
+        generations_data.add_generation_result(resultsDTO)
 
         # feed the score into generating the next moveset
         moveset_generator = GenerativeMoveSetGenerator(cfg, resultsDTO)
         movesetDTO = moveset_generator.generate_moveset()
+
+    metrics_reporter.report_metrics_for_generative_results(generations_data)
+
     return
 
 if __name__ == "__main__":

@@ -2,6 +2,7 @@ import logging
 
 from src.conf import TrainConfig
 from src.dtos import ResultsDTO
+from src.dtos.EvolutionResultsDTO import EvolutionResultsDTO
 
 LOGGER = logging.getLogger()
 

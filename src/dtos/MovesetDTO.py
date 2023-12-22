@@ -4,6 +4,7 @@ import pandas as pd
 
 LOGGER = logging.getLogger()
 
+
 @dataclass
 class MovesetDTO:
     """

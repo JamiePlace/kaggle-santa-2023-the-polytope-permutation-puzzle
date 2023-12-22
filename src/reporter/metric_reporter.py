@@ -3,6 +3,7 @@
 import logging
 
 from src.dtos import ResultsDTO, ResultDTO
+from src.dtos.EvolutionResultsDTO import EvolutionResultsDTO
 
 LOGGER = logging.getLogger()
 
@@ -25,3 +26,10 @@ class MetricsReporter:
         LOGGER.debug(f"Results: ")
         LOGGER.debug(f"\t total score: {resultsDTO.combined_score}")
         LOGGER.debug(f"\t total time: {resultsDTO.cumulative_time} \n")
+
+    def report_metrics_for_generative_results(self, evolutionResultsDTO: EvolutionResultsDTO):
+        LOGGER.debug(f"Generative overall results: ")
+        LOGGER.debug(f"\t generations: {evolutionResultsDTO.iterations}")
+        LOGGER.debug(f"\t total time: {evolutionResultsDTO.cumulative_time}")
+        average_runtime = evolutionResultsDTO.cumulative_time / evolutionResultsDTO.iterations
+        LOGGER.debug(f"\t average time per generation: {average_runtime} \n")

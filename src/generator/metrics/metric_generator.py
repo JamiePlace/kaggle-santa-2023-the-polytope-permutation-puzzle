@@ -6,6 +6,7 @@ from ast import literal_eval
 from sympy.combinatorics import Permutation
 
 import datetime
+import math
 from src.dtos import MovesetDTO
 from src.dtos.PuzzleDTO import PuzzleDTO
 from src.dtos.ResultDTO import ResultDTO
@@ -44,7 +45,10 @@ class MetricGenerator:
 
         for sol, sub in zip(ms.solution.itertuples(), ms.submission.itertuples()):
             puzzle_score = (
-                self.__generate_score_for_puzzle(ms.puzzle_info, sol, sub, ms.series_id_column_name,
+                self.__generate_score_for_puzzle(ms.puzzle_info,
+                                                 sol,
+                                                 sub,
+                                                 ms.series_id_column_name,
                                                  ms.moves_column_name))
             self.results.add_result(puzzle_score)
 
@@ -64,7 +68,7 @@ class MetricGenerator:
         # break out early if you dont want to wait for ages
         if self.specific_puzzle is not None:
             if puzzle_id != self.specific_puzzle:
-                return ResultDTO(puzzle_id, 0.0, False, datetime.timedelta(0), {})
+                return ResultDTO(puzzle_id, 0.0, False, datetime.timedelta(0), {}, math.inf)
 
         puzzle = PuzzleDTO(
             puzzle_id=puzzle_id,
