@@ -24,7 +24,7 @@ logging.basicConfig(
 def main(cfg: TrainConfig):
     LOGGER.info(f"Project name: {PROJECT_NAME} \n")
 
-    # maybe these can be defined by enuma and stored in the cfg, i.e passed in by yaml file
+    # maybe these can be defined by enums and stored in the cfg, i.e passed in by yaml file
     logging.getLogger().setLevel(logging.DEBUG)
     moveset_generator: MoveSetGeneratorBase = SimpleMoveSetGenerator(cfg, {})
     puzzle_solver: PuzzleSolverBase = SamplePuzzleSolver()
