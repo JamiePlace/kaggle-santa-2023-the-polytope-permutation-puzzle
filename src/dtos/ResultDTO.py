@@ -1,5 +1,7 @@
 from dataclasses import dataclass
 import datetime
+from typing import List
+
 import pandas as pd
 
 
@@ -14,3 +16,4 @@ class ResultDTO:
     time_taken: datetime.timedelta
     sub_solution: pd.DataFrame
     num_wrong_facelets: int
+    end_state: List[str]

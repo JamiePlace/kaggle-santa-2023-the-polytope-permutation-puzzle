@@ -16,6 +16,7 @@ class SimpleMoveSetGenerator(MoveSetGeneratorBase):
     def generate_moveset(self):
         root = get_project_root()
 
+        # todo bring the yaml config values back in
         solution = pd.read_csv(root / "data/puzzles.csv")
         submission = pd.read_csv(root / "submission.csv")
         puzzle_info = pd.read_csv(root / "data/puzzle_info.csv", index_col="puzzle_type")

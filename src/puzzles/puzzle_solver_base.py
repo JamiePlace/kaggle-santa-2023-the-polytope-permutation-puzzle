@@ -22,12 +22,13 @@ class PuzzleSolverBase:
 
         LOGGER.debug(f"Attempting to solve puzzle: {puzzle.puzzle_id}")
         LOGGER.debug(f"Puzzle: {puzzle.puzzle_id}")
-        LOGGER.debug(f"initial state: \t{state}")
-        LOGGER.debug(f"solution state: \t{puzzle.solution_state}")
-        LOGGER.debug(f"wildcards allowed: {puzzle.num_wildcards}")
+        LOGGER.debug(f"wildcards allowed: \t{puzzle.num_wildcards}")
         LOGGER.debug(f"allowed moves: {list(puzzle.allowed_moves.keys())}")
-        LOGGER.debug(f"testing moves: {moves} \n")
+        LOGGER.debug(f"testing moves: {moves}")
 
+        LOGGER.debug(f"initial state: \t{state}")
+        faces = self.cube_state_to_faces(state)
+        LOGGER.debug(f"initial faces: \t{faces}")
 
         for m in moves:
             power = 1
@@ -41,8 +42,18 @@ class PuzzleSolverBase:
                     f"{m} is not an allowed move for {self.puzzle_id}."
                 )
             state = (p ** power)(state)
+            # trying out different ways to do the perm multiplication
             # state = self.__multiple_1__(p, power, state)
             # state = self.__multiple_2__(p, power, state)
+
+        LOGGER.debug(f"end state: \t\t{state}")
+        faces = self.cube_state_to_faces(state)
+        LOGGER.debug(f"end state faces: \t{faces}")
+
+        LOGGER.debug(f"solution state: \t{puzzle.solution_state}")
+        faces = self.cube_state_to_faces(puzzle.solution_state)
+        LOGGER.debug(f"end state faces: \t{faces} \n")
+
 
         # Check that submitted moves solve puzzle
         num_wrong_facelets = sum(
@@ -66,7 +77,8 @@ class PuzzleSolverBase:
                               solved,
                               (datetime.datetime.now() - start),
                               sub_solution,
-                              num_wrong_facelets)
+                              num_wrong_facelets,
+                              state)
 
         return resultDTO
 
@@ -86,3 +98,14 @@ class PuzzleSolverBase:
         LOGGER.debug(f"after state : {new_state} \n")
 
         return new_state
+
+    def cube_state_to_faces(self, state):
+        """Convert a state list to a dictionary of labeled faces."""
+        n = int(np.sqrt(len(state) / 6))  # cube_n/n/n
+        n2 = n ** 2
+        labels = f"d{n - 1},f0,r0,f{n - 1},r{n - 1},d0".split(',')
+        faces = {}
+        for i, l in enumerate(labels):
+            face = state[n2 * i: n2 * (i + 1)]
+            faces[l] = np.asarray(face).reshape(n, n).tolist()
+        return faces
