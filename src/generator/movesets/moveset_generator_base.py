@@ -2,7 +2,9 @@ import logging
 from typing import List
 
 from src.conf import TrainConfig
-from src.dtos import EvolutionResultsDTO, MovesetDTO, ResultsDTO
+from src.dtos.evolution_results_dto import EvolutionResultsDTO
+from src.dtos.moveset_dto import MovesetDTO
+from src.dtos.results_dto import ResultsDTO
 
 LOGGER = logging.getLogger()
 

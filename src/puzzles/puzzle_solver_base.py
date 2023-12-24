@@ -3,7 +3,7 @@ import logging
 
 import numpy as np
 
-from src.dtos import ResultDTO
+from src.dtos.result_dto import ResultDTO
 from src.exceptions.participant_visible_error import ParticipantVisibleError
 
 LOGGER = logging.getLogger()

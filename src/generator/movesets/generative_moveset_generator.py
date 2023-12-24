@@ -5,7 +5,8 @@ from typing import List
 import pandas as pd
 
 from conf import TrainConfig
-from src.dtos import MovesetDTO, ResultsDTO
+from src.dtos.moveset_dto import MovesetDTO
+from src.dtos.results_dto import ResultsDTO
 from src.generator.movesets.moveset_generator_base import MoveSetGeneratorBase
 from src.utils import get_project_root
 

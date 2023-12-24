@@ -3,9 +3,7 @@ import datetime
 from dataclasses import dataclass
 from typing import List
 
-from src.dtos import ResultsDTO
-
-# from src.dtos import ResultDTO
+from src.dtos.results_dto import ResultsDTO
 
 
 class EvolutionResultsDTO:
