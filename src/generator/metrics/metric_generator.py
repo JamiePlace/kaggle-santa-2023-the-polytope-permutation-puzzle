@@ -4,6 +4,7 @@ import datetime
 import logging
 import math
 from ast import literal_eval
+from typing import Optional
 
 import pandas as pd
 from sympy.combinatorics import Permutation
@@ -25,7 +26,7 @@ class MetricGenerator:
 
     results: ResultsDTO
     puzzle_solver: PuzzleSolverBase
-    specific_puzzle: int
+    specific_puzzle: Optional[int]
 
     def __init__(self, puzzle_solver: PuzzleSolverBase, specific_puzzle):
         self.results = ResultsDTO()
