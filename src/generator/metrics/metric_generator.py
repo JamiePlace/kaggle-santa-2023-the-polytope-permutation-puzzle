@@ -66,7 +66,9 @@ class MetricGenerator:
         # break out early if you dont want to wait for ages
         if self.specific_puzzle is not None:
             if puzzle_id != self.specific_puzzle:
-                return ResultDTO(puzzle_id, 0.0, False, datetime.timedelta(0), {}, math.inf, [])
+                return ResultDTO(
+                    puzzle_id, 0.0, False, datetime.timedelta(0), pd.DataFrame(), math.inf, []  # type: ignore
+                )
 
         puzzle = PuzzleDTO(
             puzzle_id=puzzle_id,
