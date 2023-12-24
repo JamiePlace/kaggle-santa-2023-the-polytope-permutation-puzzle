@@ -3,3 +3,13 @@ defaults:
   - dir: local
   - config: config
 
+data:
+  puzzle_info: "puzzle_info.csv"
+  puzzles: "puzzles.csv"
+  submissionL: "submission.csv"
+
+config:
+  specific_puzzle:
+  generations: 1
+
+
