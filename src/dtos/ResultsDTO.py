@@ -2,7 +2,7 @@ import datetime
 from dataclasses import dataclass
 from typing import List
 
-from src.dtos.result_dto import ResultDTO
+from src.dtos.ResultDTO import ResultDTO
 
 
 @dataclass

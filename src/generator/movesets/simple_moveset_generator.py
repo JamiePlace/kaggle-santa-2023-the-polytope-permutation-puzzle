@@ -3,7 +3,7 @@ from pathlib import Path
 
 import pandas as pd
 
-from src.dtos.moveset_dto import MovesetDTO
+from src.dtos.MovesetDTO import MovesetDTO
 from src.generator.movesets.moveset_generator_base import MoveSetGeneratorBase
 from src.utils import get_project_root
 

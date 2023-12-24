@@ -9,10 +9,10 @@ from typing import Optional
 import pandas as pd
 from sympy.combinatorics import Permutation
 
-from src.dtos.moveset_dto import MovesetDTO
-from src.dtos.puzzle_dto import PuzzleDTO
-from src.dtos.result_dto import ResultDTO
-from src.dtos.results_dto import ResultsDTO
+from src.dtos.MovesetDTO import MovesetDTO
+from src.dtos.PuzzleDTO import PuzzleDTO
+from src.dtos.ResultDTO import ResultDTO
+from src.dtos.ResultsDTO import ResultsDTO
 from src.exceptions.participant_visible_error import ParticipantVisibleError
 from src.puzzles.puzzle_solver_base import PuzzleSolverBase
 from src.reporter.metric_reporter import MetricsReporter

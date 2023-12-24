@@ -4,9 +4,9 @@ from pathlib import Path
 import hydra  # type: ignore
 
 from src.conf import TrainConfig
-from src.dtos.evolution_results_dto import EvolutionResultsDTO
-from src.dtos.moveset_dto import MovesetDTO
-from src.dtos.results_dto import ResultsDTO
+from src.dtos.EvolutionResultsDTO import EvolutionResultsDTO
+from src.dtos.MovesetDTO import MovesetDTO
+from src.dtos.ResultsDTO import ResultsDTO
 from src.generator.metrics.metric_generator import MetricGenerator
 from src.generator.movesets.generative_moveset_generator import \
     GenerativeMoveSetGenerator
