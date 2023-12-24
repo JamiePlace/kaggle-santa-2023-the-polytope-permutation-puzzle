@@ -1,8 +1,11 @@
 import logging
+from pathlib import Path
+from typing import List
+
 import pandas as pd
 
-from pathlib import Path
-from src.dtos.MovesetDTO import MovesetDTO
+from conf import TrainConfig
+from src.dtos import MovesetDTO, ResultsDTO
 from src.generator.movesets.moveset_generator_base import MoveSetGeneratorBase
 from src.utils import get_project_root
 
@@ -14,17 +17,24 @@ class GenerativeMoveSetGenerator(MoveSetGeneratorBase):
     the start of a class to take the previous result as an input to the next generation of movesets
     """
 
-    def generate_moveset(self):
+    def __init__(self, cfg: TrainConfig, resultsDTO: ResultsDTO):
+        super().__init__(cfg, resultsDTO)
+
+    # we need to make sure that when we overwrite a method of the parent class
+    # that we keep the type of the output the same
+    # The parent class here "MoveSetGeneratorBase" has a method called "generate_moveset" that returns a list
+    # Here we return a MovesetDTO
+    # I have added a type hint (List[str]|MovesetDTO) to the parent class method to make sure that we don't break anything
+    def generate_moveset(self) -> MovesetDTO:
         root = get_project_root()
 
         # todo bring the yaml config values back in
-        solution = pd.read_csv(root / "data/puzzles.csv")
-        submission = pd.read_csv(root / "submission.csv")
+        solution = pd.read_csv(Path(self.cfg.dir.sub_dir) / "solution.csv")
+        submission = pd.read_csv(Path(self.cfg.dir.sub_dir) / "submission.csv")
         puzzle_info = pd.read_csv(root / "data/puzzle_info.csv", index_col="puzzle_type")
 
         easy_moveset = MovesetDTO(solution, submission, puzzle_info)
         return easy_moveset
-
 
 
 """

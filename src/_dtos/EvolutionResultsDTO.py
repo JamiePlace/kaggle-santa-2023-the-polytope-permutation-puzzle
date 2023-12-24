@@ -1,10 +1,9 @@
-from dataclasses import dataclass
 # from typing import List
 import datetime
+from dataclasses import dataclass
 from typing import List
 
-from src.dtos.ResultsDTO import ResultsDTO
-
+from src.dtos import ResultsDTO
 
 # from src.dtos import ResultDTO
 
@@ -13,6 +12,7 @@ class EvolutionResultsDTO:
     """
     results of running all puzzles
     """
+
     iterations: int
     cumulative_time: datetime.timedelta
     results: List[ResultsDTO]

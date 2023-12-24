@@ -1,16 +1,14 @@
 """Evaluation metric for Santa 2023."""
 
+import datetime
 import logging
-import pandas as pd
+import math
 from ast import literal_eval
+
+import pandas as pd
 from sympy.combinatorics import Permutation
 
-import datetime
-import math
-from src.dtos import MovesetDTO
-from src.dtos.PuzzleDTO import PuzzleDTO
-from src.dtos.ResultDTO import ResultDTO
-from src.dtos.ResultsDTO import ResultsDTO
+from src.dtos import MovesetDTO, PuzzleDTO, ResultDTO, ResultsDTO
 from src.exceptions.participant_visible_error import ParticipantVisibleError
 from src.puzzles.puzzle_solver_base import PuzzleSolverBase
 from src.reporter.metric_reporter import MetricsReporter
@@ -44,12 +42,9 @@ class MetricGenerator:
         self.__check_valid_data(ms)
 
         for sol, sub in zip(ms.solution.itertuples(), ms.submission.itertuples()):
-            puzzle_score = (
-                self.__generate_score_for_puzzle(ms.puzzle_info,
-                                                 sol,
-                                                 sub,
-                                                 ms.series_id_column_name,
-                                                 ms.moves_column_name))
+            puzzle_score = self.__generate_score_for_puzzle(
+                ms.puzzle_info, sol, sub, ms.series_id_column_name, ms.moves_column_name
+            )
             self.results.add_result(puzzle_score)
 
         return self.results
@@ -61,7 +56,9 @@ class MetricGenerator:
             )
         return True
 
-    def __generate_score_for_puzzle(self, puzzle_info, sol, sub, series_id_column_name, moves_column_name):
+    def __generate_score_for_puzzle(
+        self, puzzle_info, sol, sub, series_id_column_name, moves_column_name
+    ):
         puzzle_id = getattr(sol, series_id_column_name)
         assert puzzle_id == getattr(sub, series_id_column_name)
 
@@ -86,8 +83,6 @@ class MetricGenerator:
         return resultDTO
 
     def __get_moves_for_puzzle(self, puzzle_info, sol):
-        allowed_moves = literal_eval(
-            puzzle_info.loc[sol.puzzle_type, "allowed_moves"]
-        )
+        allowed_moves = literal_eval(puzzle_info.loc[sol.puzzle_type, "allowed_moves"])
         allowed_moves = {k: Permutation(v) for k, v in allowed_moves.items()}
         return allowed_moves

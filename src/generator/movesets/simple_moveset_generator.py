@@ -1,8 +1,9 @@
 import logging
+from pathlib import Path
+
 import pandas as pd
 
-from pathlib import Path
-from src.dtos.MovesetDTO import MovesetDTO
+from src.dtos import MovesetDTO
 from src.generator.movesets.moveset_generator_base import MoveSetGeneratorBase
 from src.utils import get_project_root
 
@@ -13,6 +14,7 @@ class SimpleMoveSetGenerator(MoveSetGeneratorBase):
     """
     OOTB moveset generator taking moveset from file.
     """
+
     def generate_moveset(self):
         root = get_project_root()
 

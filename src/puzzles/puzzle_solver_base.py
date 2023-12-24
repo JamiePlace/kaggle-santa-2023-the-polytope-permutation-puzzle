@@ -1,16 +1,15 @@
-import logging
 import datetime
+import logging
 
 import numpy as np
 
-from src.dtos.ResultDTO import ResultDTO
+from src.dtos import ResultDTO
 from src.exceptions.participant_visible_error import ParticipantVisibleError
 
 LOGGER = logging.getLogger()
 
 
 class PuzzleSolverBase:
-
     def score_puzzle(self, puzzle, sub_solution):
         """Score the solution to a permutation puzzle."""
 
@@ -38,10 +37,8 @@ class PuzzleSolverBase:
             try:
                 p = puzzle.allowed_moves[m]
             except KeyError:
-                raise ParticipantVisibleError(
-                    f"{m} is not an allowed move for {self.puzzle_id}."
-                )
-            state = (p ** power)(state)
+                raise ParticipantVisibleError(f"{m} is not an allowed move for {self.puzzle_id}.")
+            state = (p**power)(state)
             # trying out different ways to do the perm multiplication
             # state = self.__multiple_1__(p, power, state)
             # state = self.__multiple_2__(p, power, state)
@@ -54,11 +51,8 @@ class PuzzleSolverBase:
         faces = self.cube_state_to_faces(puzzle.solution_state)
         LOGGER.debug(f"end state faces: \t{faces} \n")
 
-
         # Check that submitted moves solve puzzle
-        num_wrong_facelets = sum(
-            not (s == t) for s, t in zip(puzzle.solution_state, state)
-        )
+        num_wrong_facelets = sum(not (s == t) for s, t in zip(puzzle.solution_state, state))
 
         solved: bool
         if num_wrong_facelets > puzzle.num_wildcards:
@@ -72,29 +66,29 @@ class PuzzleSolverBase:
         else:
             solved = True
 
-        resultDTO = ResultDTO(puzzle.puzzle_id,
-                              len(moves),
-                              solved,
-                              (datetime.datetime.now() - start),
-                              sub_solution,
-                              num_wrong_facelets,
-                              state)
+        resultDTO = ResultDTO(
+            puzzle.puzzle_id,
+            len(moves),
+            solved,
+            (datetime.datetime.now() - start),
+            sub_solution,
+            num_wrong_facelets,
+            state,
+        )
 
         return resultDTO
-
 
     def __multiple_1__(self, permutation, power, state):
         # LOGGER.debug(f"permutation : {permutation.array_form} ")
         # LOGGER.debug(f"before state : {state} ")
-        new_state = (permutation ** power)(state)
+        new_state = (permutation**power)(state)
         # LOGGER.debug(f"after state : {new_state} \n")
         return new_state
 
     def __multiple_2__(self, permutation, power, state):
-
         LOGGER.debug(f"permutation : {permutation.array_form} ")
         LOGGER.debug(f"before state : {state} ")
-        new_state = np.matmul((permutation ** power), state)
+        new_state = np.matmul((permutation**power), state)
         LOGGER.debug(f"after state : {new_state} \n")
 
         return new_state
@@ -102,10 +96,10 @@ class PuzzleSolverBase:
     def cube_state_to_faces(self, state):
         """Convert a state list to a dictionary of labeled faces."""
         n = int(np.sqrt(len(state) / 6))  # cube_n/n/n
-        n2 = n ** 2
-        labels = f"d{n - 1},f0,r0,f{n - 1},r{n - 1},d0".split(',')
+        n2 = n**2
+        labels = f"d{n - 1},f0,r0,f{n - 1},r{n - 1},d0".split(",")
         faces = {}
         for i, l in enumerate(labels):
-            face = state[n2 * i: n2 * (i + 1)]
+            face = state[n2 * i : n2 * (i + 1)]
             faces[l] = np.asarray(face).reshape(n, n).tolist()
         return faces

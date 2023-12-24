@@ -1,14 +1,16 @@
 import logging
 from pathlib import Path
+
 import hydra  # type: ignore
 
 from src.conf import TrainConfig
-from src.dtos import EvolutionResultsDTO, ResultsDTO, MovesetDTO
-from src.dtos.EvolutionResultsDTO import EvolutionResultsDTO
+from src.dtos import EvolutionResultsDTO, MovesetDTO, ResultsDTO
 from src.generator.metrics.metric_generator import MetricGenerator
-from src.generator.movesets.generative_moveset_generator import GenerativeMoveSetGenerator
+from src.generator.movesets.generative_moveset_generator import \
+    GenerativeMoveSetGenerator
 from src.generator.movesets.moveset_generator_base import MoveSetGeneratorBase
-from src.generator.movesets.simple_moveset_generator import SimpleMoveSetGenerator
+from src.generator.movesets.simple_moveset_generator import \
+    SimpleMoveSetGenerator
 from src.puzzles.puzzle_solver_base import PuzzleSolverBase
 from src.puzzles.sample_puzzle_solver import SamplePuzzleSolver
 from src.reporter.metric_reporter import MetricsReporter
@@ -59,6 +61,7 @@ def main(cfg: TrainConfig):
     metrics_reporter.report_metrics_for_generative_results(generations_data)
 
     return
+
 
 if __name__ == "__main__":
     main()  # type: ignore

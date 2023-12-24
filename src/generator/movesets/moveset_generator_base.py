@@ -1,8 +1,8 @@
 import logging
+from typing import List
 
 from src.conf import TrainConfig
-from src.dtos import ResultsDTO
-from src.dtos.EvolutionResultsDTO import EvolutionResultsDTO
+from src.dtos import EvolutionResultsDTO, MovesetDTO, ResultsDTO
 
 LOGGER = logging.getLogger()
 
@@ -15,5 +15,5 @@ class MoveSetGeneratorBase:
         self.cfg = training_config
         self.previous_results = resultsDTO
 
-    def generate_moveset(self):
+    def generate_moveset(self) -> List[str] | MovesetDTO:
         return []
