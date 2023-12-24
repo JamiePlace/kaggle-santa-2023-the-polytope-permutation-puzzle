@@ -37,7 +37,9 @@ class PuzzleSolverBase:
             try:
                 p = puzzle.allowed_moves[m]
             except KeyError:
-                raise ParticipantVisibleError(f"{m} is not an allowed move for {self.puzzle_id}.")
+                raise ParticipantVisibleError(
+                    f"{m} is not an allowed move for {puzzle.puzzle_id}."
+                )
             state = (p**power)(state)
             # trying out different ways to do the perm multiplication
             # state = self.__multiple_1__(p, power, state)
