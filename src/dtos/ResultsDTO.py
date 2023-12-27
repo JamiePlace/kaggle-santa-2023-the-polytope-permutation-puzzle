@@ -1,9 +1,8 @@
+import datetime
 from dataclasses import dataclass
 from typing import List
-import datetime
 
-
-from src.dtos import ResultDTO
+from src.dtos.ResultDTO import ResultDTO
 
 
 @dataclass
@@ -11,6 +10,7 @@ class ResultsDTO:
     """
     results of running all puzzles
     """
+
     combined_score: float
     cumulative_time: datetime.timedelta
     results: List[ResultDTO]

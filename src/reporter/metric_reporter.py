@@ -2,8 +2,9 @@
 
 import logging
 
-from src.dtos import ResultsDTO, ResultDTO
 from src.dtos.EvolutionResultsDTO import EvolutionResultsDTO
+from src.dtos.ResultDTO import ResultDTO
+from src.dtos.ResultsDTO import ResultsDTO
 
 LOGGER = logging.getLogger()
 

@@ -1,9 +1,0 @@
-per puzzle:
-    1. make population of random move sets that get to solution
-        1. grab random move set
-        2. apply permutations and check if right
-        3. if not go to step 1
-        4. continue until right
-    2. randomly select from the top N move sets (top being fewest moves to complete)
-    3. combine random subsets of each move set to create more move sets (throw away if no solution found)
-    4. keep top N move sets plus newly mutated move sets. Go to step 1.
