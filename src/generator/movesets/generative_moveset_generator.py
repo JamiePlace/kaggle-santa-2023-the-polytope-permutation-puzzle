@@ -1,10 +1,8 @@
 import logging
-from pathlib import Path
-from typing import List
 
 import pandas as pd
 
-from conf import TrainConfig
+from src.conf import TrainConfig
 from src.dtos.MovesetDTO import MovesetDTO
 from src.dtos.ResultsDTO import ResultsDTO
 from src.generator.movesets.moveset_generator_base import MoveSetGeneratorBase
@@ -14,49 +12,30 @@ LOGGER = logging.getLogger()
 
 
 class GenerativeMoveSetGenerator(MoveSetGeneratorBase):
-    """
-    the start of a class to take the previous result as an input to the next generation of movesets
-    """
 
     def __init__(self, cfg: TrainConfig, resultsDTO: ResultsDTO):
         super().__init__(cfg, resultsDTO)
 
-    # we need to make sure that when we overwrite a method of the parent class
-    # that we keep the type of the output the same
-    # The parent class here "MoveSetGeneratorBase" has a method called "generate_moveset" that returns a list
-    # Here we return a MovesetDTO
-    # I have added a type hint (List[str]|MovesetDTO) to the parent class method to make sure that we don't break anything
     def generate_moveset(self) -> MovesetDTO:
+        LOGGER.info(f"--- Generating moveset using GenerativeMoveSetGenerator ---")
+
         root = get_project_root()
 
-        # todo bring the yaml config values back in
-        solution = pd.read_csv(Path(self.cfg.dir.sub_dir) / "solution.csv")
-        submission = pd.read_csv(Path(self.cfg.dir.sub_dir) / "submission.csv")
-        puzzle_info = pd.read_csv(root / "data/puzzle_info.csv", index_col="puzzle_type")
+        solution = pd.read_csv(root / self.cfg.data.puzzles_file)
+        submission = pd.read_csv(root / self.cfg.data.submission_file)
+        puzzle_info = pd.read_csv(root / self.cfg.data.puzzles_info_file,
+                                  index_col=self.cfg.data.puzzle_info_attributes.puzzle_info_puzzle_type_col_name)
 
-        easy_moveset = MovesetDTO(solution, submission, puzzle_info)
-        return easy_moveset
+        if self.specific_puzzle is None:
+            raise Exception("this requires a specific puzzle id, update the yaml file or project inputs")
 
+        move_set = MovesetDTO(solution, submission, puzzle_info)
 
-"""
-submission is the ceiling of the moveset size
+        new_puzzles = []
+        for result in self.previous_results.results:
+            new_puzzles.append(result.puzzle)
+        move_set.set_puzzles(new_puzzles)
 
-{x1, x2, x3...... xX  } length Y
+        LOGGER.info(f"--- Generating moveset complete---\n")
 
-new moveset
-[
-    {x1, x2, x3...... xX  } length Y
-    .
-    .
-    .
-    .
-    {x1, x2, x3...... xX  } length (y-some value)
-]
-
-take the submission, lets say 100 elements in array
-break it up into secitons of 5/10 etc and then randomly move them around to create a new moveset
-
-we can still add some sense of randomnes by either changing one or more values in a move 
-
-or we can entirely generate a full move randomly and fire it into the moveset and hope for the best...
-"""
+        return move_set
