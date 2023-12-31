@@ -17,7 +17,7 @@ class GenerativeMoveSetGenerator(MoveSetGeneratorBase):
         super().__init__(cfg, resultsDTO)
 
     def generate_moveset(self) -> MovesetDTO:
-        LOGGER.info(f"--- Generating moveset using GenerativeMoveSetGenerator ---")
+        LOGGER.debug(f"--- Generating moveset using GenerativeMoveSetGenerator ---")
 
         root = get_project_root()
 
@@ -36,6 +36,6 @@ class GenerativeMoveSetGenerator(MoveSetGeneratorBase):
             new_puzzles.append(result.puzzle)
         move_set.set_puzzles(new_puzzles)
 
-        LOGGER.info(f"--- Generating moveset complete---\n")
+        LOGGER.debug(f"--- Generating moveset complete---\n")
 
         return move_set

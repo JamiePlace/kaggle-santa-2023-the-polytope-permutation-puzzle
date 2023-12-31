@@ -6,10 +6,10 @@ defaults:
 data:
   puzzles_file: data/puzzles.csv
   puzzles_info_file: data/puzzle_info.csv
-  submission_file: data/sample_submission.csv
+  submission_file: submission.csv
 
 config:
-  specific_puzzle: 0
-  generations: 2
+  specific_puzzle:
+  generations:
 
 

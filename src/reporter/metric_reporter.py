@@ -5,7 +5,7 @@ import logging
 from src.dtos.EvolutionResultsDTO import EvolutionResultsDTO
 from src.dtos.ResultDTO import ResultDTO
 from src.dtos.ResultsDTO import ResultsDTO
-from src.utilities.puzzle_utils import get_number_of_moves_for_puzzle
+from src.utilities.puzzle_utils import get_number_of_moves_for_puzzle, is_puzzle_solution_same
 
 LOGGER = logging.getLogger()
 
@@ -37,10 +37,11 @@ class MetricsReporter:
         for puzzle in resultsDTO.results:
             if len(largest_scores) < topx:
                 largest_scores.append(puzzle)
-            for index, top_x_puzzle in enumerate(largest_scores):
-                if puzzle.score > top_x_puzzle.score:
-                    largest_scores[index] = top_x_puzzle
-                break
+            else:
+                for index, top_x_puzzle in enumerate(largest_scores):
+                    if puzzle.score > top_x_puzzle.score:
+                        largest_scores[index] = top_x_puzzle
+                        break
 
         LOGGER.info(f"Puzzle stats: puzzles with largest moves")
         for index, score in enumerate(largest_scores):
@@ -53,11 +54,12 @@ class MetricsReporter:
         for puzzle in resultsDTO.results:
             if len(largest_times) < topx:
                 largest_times.append(puzzle)
-            for index, top_x_puzzle in enumerate(largest_times):
-                if puzzle.time_taken < top_x_puzzle.time_taken:
-                    if len(puzzle.puzzle.submission_solution) < len(top_x_puzzle.puzzle.submission_solution):
-                        largest_times[index] = puzzle
-                break
+            else:
+                for index, top_x_puzzle in enumerate(largest_times):
+                    if puzzle.time_taken < top_x_puzzle.time_taken:
+                        if len(puzzle.puzzle.submission_solution) < len(top_x_puzzle.puzzle.submission_solution):
+                            largest_times[index] = puzzle
+                            break
 
         largest_times.sort(key=lambda x: x.time_taken, reverse=True)
 
@@ -72,12 +74,13 @@ class MetricsReporter:
         for puzzle in resultsDTO.results:
             if len(best_scores) < topx:
                 best_scores.append(puzzle)
-            for index, top_x_puzzle in enumerate(best_scores):
-                if puzzle.num_wrong_facelets < top_x_puzzle.num_wrong_facelets:
-                    if (get_number_of_moves_for_puzzle(puzzle.puzzle) <
-                            get_number_of_moves_for_puzzle(top_x_puzzle.puzzle)):
-                        best_scores[index] = puzzle
-                break
+            else:
+                for index, top_x_puzzle in enumerate(best_scores):
+                    if puzzle.num_wrong_facelets < top_x_puzzle.num_wrong_facelets:
+                        if (get_number_of_moves_for_puzzle(puzzle.puzzle) <
+                                get_number_of_moves_for_puzzle(top_x_puzzle.puzzle)):
+                            best_scores[index] = puzzle
+                            break
 
         best_scores.sort(key=lambda x: x.num_wrong_facelets, reverse=True)
 
@@ -100,23 +103,28 @@ class MetricsReporter:
         for gen_result in evolutionResultsDTO.results:
             for gen_result_puzzle in gen_result.results:
                 if len(best_scores) < topx:
+                    # init the array
                     best_scores.append(gen_result_puzzle)
                     best_scores.sort(key=lambda x: x.num_wrong_facelets, reverse=True)
-                for index, top_x_puzzle in enumerate(best_scores):
-                    if gen_result_puzzle.num_wrong_facelets < top_x_puzzle.num_wrong_facelets:
-                        # if
-                        best_scores[index] = gen_result_puzzle
-                    else:
-                        if ((gen_result_puzzle.num_wrong_facelets == top_x_puzzle.num_wrong_facelets) &
-                                (get_number_of_moves_for_puzzle(
-                                    gen_result_puzzle.puzzle) < get_number_of_moves_for_puzzle(top_x_puzzle.puzzle))):
-                            best_scores[index] = gen_result_puzzle
-                    break
+                else:
+                    # check array of scores to see can we add it
+                    for index, top_x_puzzle in enumerate(best_scores):
+                        # make sure it hasnt been added by any other generation
+                        if not is_puzzle_solution_same(gen_result_puzzle.puzzle, top_x_puzzle.puzzle):
+                            if gen_result_puzzle.num_wrong_facelets < top_x_puzzle.num_wrong_facelets:
+                                best_scores[index] = gen_result_puzzle
+                                break
+                            else:
+                                if ((gen_result_puzzle.num_wrong_facelets == top_x_puzzle.num_wrong_facelets) &
+                                        (get_number_of_moves_for_puzzle(gen_result_puzzle.puzzle) <
+                                         get_number_of_moves_for_puzzle(top_x_puzzle.puzzle))):
+                                    best_scores[index] = gen_result_puzzle
+                                    break
 
         best_scores.sort(key=lambda x: x.num_wrong_facelets, reverse=True)
 
         LOGGER.info(f"Puzzle stats: puzzles with smallest error (number of incorrect values)")
         for index, score in enumerate(best_scores):
             LOGGER.info(
-                f"\t\t puzzle id: {score.puzzle_id} \terrors: {score.num_wrong_facelets} \t puzzle solution: {score.puzzle.submission_solution}")
+                f"\t\t puzzle id: {score.puzzle_id} \tsolved: {score.solved} \terrors: {score.num_wrong_facelets} \t puzzle solution: {score.puzzle.submission_solution}")
         LOGGER.info(f"\n")

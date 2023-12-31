@@ -14,7 +14,7 @@ class MoveSetGeneratorBase:
     previous_results: ResultsDTO
     specific_puzzle: int
 
-    def __init__(self, training_config: TrainConfig, resultsDTO: ResultsDTO):
+    def __init__(self, training_config: TrainConfig, resultsDTO: ResultsDTO | None):
         self.cfg = training_config
         self.previous_results = resultsDTO
 

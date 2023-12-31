@@ -18,7 +18,7 @@ class SimpleMoveSetGenerator(MoveSetGeneratorBase):
     """
 
     def generate_moveset(self):
-        LOGGER.info(f"--- Generating moveset using SimpleMoveSetGenerator ---")
+        LOGGER.debug(f"--- Generating moveset using SimpleMoveSetGenerator ---")
 
         root = get_project_root()
 
@@ -39,7 +39,7 @@ class SimpleMoveSetGenerator(MoveSetGeneratorBase):
 
         move_set.set_puzzles(puzzles)
 
-        LOGGER.info(f"--- Generating moveset complete---\n")
+        LOGGER.debug(f"--- Generating moveset complete---\n")
 
         return move_set
 
