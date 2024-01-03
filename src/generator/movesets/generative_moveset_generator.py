@@ -18,18 +18,10 @@ class GenerativeMoveSetGenerator(MoveSetGeneratorBase):
 
     def generate_moveset(self) -> MovesetDTO:
         LOGGER.debug(f"--- Generating moveset using GenerativeMoveSetGenerator ---")
-
-        root = get_project_root()
-
-        solution = pd.read_csv(root / self.cfg.data.puzzles_file)
-        submission = pd.read_csv(root / self.cfg.data.submission_file)
-        puzzle_info = pd.read_csv(root / self.cfg.data.puzzles_info_file,
-                                  index_col=self.cfg.data.puzzle_info_attributes.puzzle_info_puzzle_type_col_name)
-
         if self.specific_puzzle is None:
             raise Exception("this requires a specific puzzle id, update the yaml file or project inputs")
 
-        move_set = MovesetDTO(solution, submission, puzzle_info)
+        move_set = MovesetDTO(self.solution, self.submission, self.puzzle_info)
 
         new_puzzles = []
         for result in self.previous_results.results:

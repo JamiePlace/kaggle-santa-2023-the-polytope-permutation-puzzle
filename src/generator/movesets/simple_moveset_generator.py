@@ -7,7 +7,6 @@ from sympy.combinatorics import Permutation
 from src.dtos.MovesetDTO import MovesetDTO
 from src.dtos.PuzzleDTO import PuzzleDTO
 from src.generator.movesets.moveset_generator_base import MoveSetGeneratorBase
-from src.utils import get_project_root
 
 LOGGER = logging.getLogger()
 
@@ -16,22 +15,17 @@ class SimpleMoveSetGenerator(MoveSetGeneratorBase):
     """
     OOTB moveset generator taking moveset from file.
     """
+    def __init__(self, cfg, resultsDTO):
+        super().__init__(cfg, resultsDTO)
 
     def generate_moveset(self):
         LOGGER.debug(f"--- Generating moveset using SimpleMoveSetGenerator ---")
 
-        root = get_project_root()
-
-        solution = pd.read_csv(root / self.cfg.data.puzzles_file)
-        submission = pd.read_csv(root / self.cfg.data.submission_file)
-        puzzle_info = pd.read_csv(root / self.cfg.data.puzzles_info_file,
-                                  index_col=self.cfg.data.puzzle_info_attributes.puzzle_info_puzzle_type_col_name)
-
-        move_set = MovesetDTO(solution, submission, puzzle_info)
+        move_set = MovesetDTO(self.solution, self.submission, self.puzzle_info)
 
         puzzles = []
-        for sol, sub in zip(solution.itertuples(), submission.itertuples()):
-            puzzle = self.__convert_dict_to_puzzle(puzzle_info,
+        for sol, sub in zip(self.solution.itertuples(), self.submission.itertuples()):
+            puzzle = self.__convert_dict_to_puzzle(self.puzzle_info,
                                                    sol,
                                                    sub)
             if puzzle is not None:

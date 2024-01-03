@@ -1,13 +1,15 @@
 import logging
 
 import numpy as np
-import pandas as pd
 
+from src.conf import TrainConfig
 from src.dtos.MovesetDTO import MovesetDTO
 from src.dtos.PuzzleDTO import PuzzleDTO
+from src.dtos.ResultsDTO import ResultsDTO
 from src.generator.movesets.generative_moveset_generator import GenerativeMoveSetGenerator
-from src.utilities.puzzle_utils import get_x_lowest_error_puzzle_results, get_random_move_from_list_of_allowed_moves
-from src.utils import get_project_root
+from src.utilities.puzzle_utils import (
+    get_random_move_from_list_of_allowed_moves,
+    get_x_lowest_error_puzzle_results)
 
 LOGGER = logging.getLogger()
 
@@ -28,20 +30,18 @@ class RandomGenerativeMoveSetGenerator(GenerativeMoveSetGenerator):
     we randomly update x number of moves in one moveset/solution in the hope that it brings us closer...
     """
 
+    def __init__(self, cfg: TrainConfig, resultsDTO: ResultsDTO):
+        super().__init__(cfg, resultsDTO)
+
     def generate_moveset(self):
         LOGGER.debug(f"--- Generating moveset using RandomGenerativeMoveSetGenerator ---")
 
-        root = get_project_root()
-        solution = pd.read_csv(root / self.cfg.data.puzzles_file)
-        submission = pd.read_csv(root / self.cfg.data.submission_file)
-        puzzle_info = pd.read_csv(root / self.cfg.data.puzzles_info_file,
-                                  index_col=self.cfg.data.puzzle_info_attributes.puzzle_info_puzzle_type_col_name)
-
         if self.specific_puzzle is None:
             raise Exception(
-                "this moveset generator requires a specific puzzle id, update the yaml file or project inputs")
+                "this moveset generator requires a specific puzzle id, update the yaml file or project inputs"
+            )
 
-        move_set = MovesetDTO(solution, submission, puzzle_info)
+        move_set = MovesetDTO(self.solution, self.submission, self.puzzle_info)
         new_puzzles = self.generate_move_set_from_previous_results()
         move_set.set_puzzles(new_puzzles)
 
@@ -60,8 +60,9 @@ class RandomGenerativeMoveSetGenerator(GenerativeMoveSetGenerator):
             new_puzzles.append(new_puzzle)
 
         # store the top x% incase doing something to them fucks em up
-        best_results = get_x_lowest_error_puzzle_results(self.previous_results.results,
-                                                         len(self.previous_results.results) / 20)
+        best_results = get_x_lowest_error_puzzle_results(
+            self.previous_results.results, len(self.previous_results.results) / 20
+        )
         for res in best_results:
             new_puzzles.append(res.puzzle)
 
@@ -74,21 +75,26 @@ class RandomGenerativeMoveSetGenerator(GenerativeMoveSetGenerator):
 
     def generate_new_move_from_old_move(self):
         # take the top 5%, or make this an input..
-        best_move_sets = get_x_lowest_error_puzzle_results(self.previous_results.results,
-                                                           len(self.previous_results.results) / 20)
+        best_move_sets = get_x_lowest_error_puzzle_results(
+            self.previous_results.results, len(self.previous_results.results) / 20
+        )
         pp = best_move_sets[np.random.randint(0, len(best_move_sets))].puzzle
 
         number_of_changes = 1
         # number_of_changes = np.random.randint(1, int(pp.max_moves/4))
-        new_move = self.make_new_move_form_old(pp.allowed_moves, pp.submission_solution, number_of_changes)
+        new_move = self.make_new_move_form_old(
+            pp.allowed_moves, pp.submission_solution, number_of_changes
+        )
 
-        puzzle = PuzzleDTO(puzzle_id=self.specific_puzzle,
-                           allowed_moves=pp.allowed_moves,
-                           solution_state=pp.solution_state,
-                           initial_state=pp.initial_state,
-                           num_wildcards=pp.num_wildcards,
-                           submission_solution=new_move,
-                           max_moves=pp.max_moves)
+        puzzle = PuzzleDTO(
+            puzzle_id=self.specific_puzzle,
+            allowed_moves=pp.allowed_moves,
+            solution_state=pp.solution_state,
+            initial_state=pp.initial_state,
+            num_wildcards=pp.num_wildcards,
+            submission_solution=new_move,
+            max_moves=pp.max_moves,
+        )
 
         return puzzle
 
@@ -100,13 +106,15 @@ class RandomGenerativeMoveSetGenerator(GenerativeMoveSetGenerator):
         new_move_length = np.random.randint(1, pp.max_moves)
         new_move = self.make_new_random_move(pp.allowed_moves, new_move_length)
 
-        puzzle = PuzzleDTO(puzzle_id=self.specific_puzzle,
-                           allowed_moves=pp.allowed_moves,
-                           solution_state=pp.solution_state,
-                           initial_state=pp.initial_state,
-                           num_wildcards=pp.num_wildcards,
-                           submission_solution=new_move,
-                           max_moves=pp.max_moves)
+        puzzle = PuzzleDTO(
+            puzzle_id=self.specific_puzzle,
+            allowed_moves=pp.allowed_moves,
+            solution_state=pp.solution_state,
+            initial_state=pp.initial_state,
+            num_wildcards=pp.num_wildcards,
+            submission_solution=new_move,
+            max_moves=pp.max_moves,
+        )
 
         return puzzle
 
@@ -116,7 +124,7 @@ class RandomGenerativeMoveSetGenerator(GenerativeMoveSetGenerator):
         while new_move == best_move:
             split_move = best_move.split(".")
             new_move = self.change_random_move(allowed_moves, split_move, number_of_changes)
-            new_move = '.'.join(new_move)
+            new_move = ".".join(new_move)
 
         return new_move
 
@@ -124,7 +132,7 @@ class RandomGenerativeMoveSetGenerator(GenerativeMoveSetGenerator):
         new_move_list = []
         for x in range(move_length):
             new_move_list.append(get_random_move_from_list_of_allowed_moves(allowed_moves))
-        new_move = '.'.join(new_move_list)
+        new_move = ".".join(new_move_list)
 
         return new_move
 
@@ -132,8 +140,9 @@ class RandomGenerativeMoveSetGenerator(GenerativeMoveSetGenerator):
         changed_move = move
 
         for x in range(number):
-            changed_move[np.random.randint(0, len(changed_move))] = get_random_move_from_list_of_allowed_moves(
-                allowed_moves)
+            changed_move[
+                np.random.randint(0, len(changed_move))
+            ] = get_random_move_from_list_of_allowed_moves(allowed_moves)
 
         # add or remove a move
         # every now and again remove a move to see if we can get something smaller
