@@ -17,11 +17,11 @@ class ParticipantVisibleError(Exception):
 
 
 def score(
-    solution: pd.DataFrame,
-    submission: pd.DataFrame,
-    series_id_column_name: str,
-    moves_column_name: str,
-    puzzle_info_path: str,
+        solution: pd.DataFrame,
+        submission: pd.DataFrame,
+        series_id_column_name: str,
+        moves_column_name: str,
+        puzzle_info_path: str,
 ) -> float:
     """Santa 2023 evaluation metric.
 
@@ -98,7 +98,7 @@ def score_puzzle(puzzle_id, puzzle, sub_solution):
             p = puzzle.allowed_moves[m]
         except KeyError:
             raise ParticipantVisibleError(f"{m} is not an allowed move for {puzzle_id}.")
-        state = (p**power)(state)
+        state = (p ** power)(state)
 
     # Check that submitted moves solve puzzle
     num_wrong_facelets = sum(not (s == t) for s, t in zip(puzzle.solution_state, state))
@@ -107,6 +107,6 @@ def score_puzzle(puzzle_id, puzzle, sub_solution):
 
     end = datetime.datetime.now()
     # The score for this instance is the total number of moves needed to solve the puzzle
-    LOGGER.info(f"Time taken: { (end - start).microseconds}")
+    LOGGER.info(f"Time taken: {(end - start).microseconds}")
 
     return len(moves)

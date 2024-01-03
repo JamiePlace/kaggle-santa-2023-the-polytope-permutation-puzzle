@@ -7,4 +7,3 @@ class SamplePuzzleSolver(PuzzleSolverBase):
     we can look at ways to make this faster and build on new classes if needed...
     """
     pass
-

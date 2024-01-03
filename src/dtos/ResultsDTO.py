@@ -21,6 +21,7 @@ class ResultsDTO:
         self.cumulative_time = datetime.timedelta(0)
 
     def add_result(self, resultDTO: ResultDTO):
-        self.combined_score = self.combined_score + resultDTO.score
-        self.results.append(resultDTO)
-        self.cumulative_time += resultDTO.time_taken
+        if resultDTO is not None:
+            self.combined_score = self.combined_score + resultDTO.score
+            self.results.append(resultDTO)
+            self.cumulative_time += resultDTO.time_taken

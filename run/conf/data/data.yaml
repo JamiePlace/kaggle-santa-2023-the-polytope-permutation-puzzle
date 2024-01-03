@@ -1,0 +1,14 @@
+puzzle_attributes:
+    puzzle_id_col_name: id
+    puzzle_puzzle_type_col_name: puzzle_type
+    puzzle_solution_state_col_name: solution_state
+    puzzle_initial_state_col_name: initial_state
+    puzzle_num_wildcards_col_name: num_wildcards
+
+puzzle_info_attributes:
+  puzzle_info_puzzle_type_col_name: puzzle_type
+  puzzle_info_allowed_moves_col_name: allowed_moves
+
+submission_attributes:
+  submission_id_col_name: id
+  submission_moves_col_name: moves

@@ -1,15 +1,15 @@
 defaults:
   - _self_
   - dir: local
-  - config: config
+  - data: data
 
 data:
-  puzzle_info: "puzzle_info.csv"
-  puzzles: "puzzles.csv"
-  submissionL: "submission.csv"
+  puzzles_file: data/puzzles.csv
+  puzzles_info_file: data/puzzle_info.csv
+  submission_file: submission.csv
 
 config:
   specific_puzzle:
-  generations: 1
+  generations:
 
 
