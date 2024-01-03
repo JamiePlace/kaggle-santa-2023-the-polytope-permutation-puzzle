@@ -9,6 +9,7 @@ from src.dtos.MovesetDTO import MovesetDTO
 from src.dtos.ResultsDTO import ResultsDTO
 from src.generator.metrics.metric_generator import MetricGenerator
 from src.generator.movesets.generative_moveset_generator import GenerativeMoveSetGenerator
+from src.generator.movesets.iterative_generative_moveset_generator import IterativeGenerativeMoveSetGenerator
 from src.generator.movesets.moveset_generator_base import MoveSetGeneratorBase
 from src.generator.movesets.random_generative_moveset_generator import RandomGenerativeMoveSetGenerator
 from src.generator.movesets.simple_moveset_generator import \
@@ -101,9 +102,10 @@ def run_with_generations(cfg: TrainConfig):
         # metrics_reporter.report_puzzle_stats_smallest_error(resultsDTO)
 
         # feed the generation results into generating the next moveset
-        # moveset_generator = GenerativeMoveSetGenerator(cfg, resultsDTO)
         # moveset_generator = SimpleMoveSetGenerator(cfg, resultsDTO)
-        moveset_generator = RandomGenerativeMoveSetGenerator(cfg, resultsDTO)
+        # moveset_generator = GenerativeMoveSetGenerator(cfg, resultsDTO)
+        # moveset_generator = RandomGenerativeMoveSetGenerator(cfg, resultsDTO)
+        moveset_generator = IterativeGenerativeMoveSetGenerator(cfg, resultsDTO)
         moveset_generator.with_specific_puzzle(specific_puzzle)
         movesetDTO = moveset_generator.generate_moveset()
 

@@ -4,6 +4,7 @@ import logging
 import numpy as np
 
 from src.dtos.PuzzleDTO import PuzzleDTO
+from src.dtos.PuzzleStateChangeDTO import PuzzleStateChangeDTO
 from src.dtos.ResultDTO import ResultDTO
 from src.exceptions.participant_visible_error import ParticipantVisibleError
 
@@ -30,6 +31,7 @@ class PuzzleSolverBase:
         faces = self.cube_state_to_faces(state)
         LOGGER.debug(f"initial faces: \t{faces}")
 
+        move_to_error_mapping = []
         for m in moves:
             power = 1
             try:
@@ -46,9 +48,8 @@ class PuzzleSolverBase:
             except KeyError:
                 raise ParticipantVisibleError(f"{m} is not an allowed move for {self.puzzle_id}.")
             state = (p ** power)(state)
-            # trying out different ways to do the perm multiplication
-            # state = self.__multiple_1__(p, power, state)
-            # state = self.__multiple_2__(p, power, state)
+            num_wrong_facelets = sum(not (s == t) for s, t in zip(puzzle.solution_state, state))
+            move_to_error_mapping.append(num_wrong_facelets)
 
         LOGGER.debug(f"end state: \t\t{state}")
         faces = self.cube_state_to_faces(state)
@@ -64,40 +65,46 @@ class PuzzleSolverBase:
         solved: bool
         if num_wrong_facelets > puzzle.num_wildcards:
             solved = False
-            # for now do not raise an error, as we would probably like to create some sort of feedback loop into the
-            # next iteration
-
-            # raise ParticipantVisibleError(
-            #     f"Submitted moves do not solve {self.puzzle_id}."
-            # )
         else:
             solved = True
 
+        attempt = 0
+        previous_error = num_wrong_facelets
+        previous_error_mapping = move_to_error_mapping
+        if puzzle.previous_state is not None:
+            attempt = puzzle.previous_state.attempt + 1
+            previous_error = puzzle.previous_state.error_count
+            previous_error_mapping = puzzle.previous_state.move_to_error_mapping
+
+        # store the previous state
+        previous_state = PuzzleStateChangeDTO(
+            puzzle_id=puzzle.puzzle_id,
+            initial_state=puzzle.initial_state,
+            after_state=state,
+            solution_used=puzzle.submission_solution,
+            error_count=previous_error,
+            move_to_error_mapping=previous_error_mapping,
+            attempt=attempt
+        )
+        # for now store the previous state in the puzzle as we only have access to the puzzle on the scoring class here
+        # we create the result here so we don't have anything to draw of to get the previous result, unless we pass in
+        # the result object instead of the puzzle object
+        puzzle.previous_state = previous_state
+
+        # setup a result for this puzzle
         resultDTO = ResultDTO(
-            puzzle.puzzle_id,
-            puzzle,
-            len(moves),
-            solved,
-            (datetime.datetime.now() - start),
-            num_wrong_facelets,
-            state)
+            puzzle_id=puzzle.puzzle_id,
+            puzzle=puzzle,
+            score=len(moves),
+            solved=solved,
+            time_taken=(datetime.datetime.now() - start),
+            end_state=state,
+            error_count=num_wrong_facelets,
+            move_to_error_mapping=move_to_error_mapping
+        )
 
         return resultDTO
 
-    def __multiple_1__(self, permutation, power, state):
-        # LOGGER.debug(f"permutation : {permutation.array_form} ")
-        # LOGGER.debug(f"before state : {state} ")
-        new_state = (permutation ** power)(state)
-        # LOGGER.debug(f"after state : {new_state} \n")
-        return new_state
-
-    def __multiple_2__(self, permutation, power, state):
-        LOGGER.debug(f"permutation : {permutation.array_form} ")
-        LOGGER.debug(f"before state : {state} ")
-        new_state = np.matmul((permutation ** power), state)
-        LOGGER.debug(f"after state : {new_state} \n")
-
-        return new_state
 
     def cube_state_to_faces(self, state):
         """Convert a state list to a dictionary of labeled faces."""

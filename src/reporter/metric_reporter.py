@@ -19,17 +19,12 @@ class MetricsReporter:
     """
 
     def report_metrics_for_result(self, resultDTO: ResultDTO):
-        LOGGER.info(f"Scoring puzzle: {resultDTO.puzzle_id}")
-        LOGGER.info(f"\t score: {resultDTO.score}")
-        LOGGER.info(f"\t solved?: {resultDTO.solved}")
-        if resultDTO.num_wrong_facelets > 0:
-            LOGGER.info(f"\t number incorrect: {resultDTO.num_wrong_facelets}")
-        LOGGER.info(f"\t time taken: {resultDTO.time_taken} \n")
+        LOGGER.info(f"Scoring puzzle: {resultDTO.puzzle_id} \tscore: {resultDTO.score} \t solved?: {resultDTO.solved} \t error: {resultDTO.error_count} \t moves: {resultDTO.puzzle.submission_solution}")
+        LOGGER.debug(f"\t time taken: {resultDTO.time_taken} \n")
 
     def report_metrics_for_results(self, resultsDTO: ResultsDTO):
         LOGGER.info(f"Results: ")
-        LOGGER.info(f"\t total score: {resultsDTO.combined_score}")
-        LOGGER.info(f"\t total time: {resultsDTO.cumulative_time} \n")
+        LOGGER.info(f"\t total score: {resultsDTO.combined_score} \t total time: {resultsDTO.cumulative_time} \n")
 
     def report_puzzle_stats_largest_score(self, resultsDTO: ResultsDTO):
         topx = 10
@@ -76,18 +71,18 @@ class MetricsReporter:
                 best_scores.append(puzzle)
             else:
                 for index, top_x_puzzle in enumerate(best_scores):
-                    if puzzle.num_wrong_facelets < top_x_puzzle.num_wrong_facelets:
+                    if puzzle.error_count < top_x_puzzle.error_count:
                         if (get_number_of_moves_for_puzzle(puzzle.puzzle) <
                                 get_number_of_moves_for_puzzle(top_x_puzzle.puzzle)):
                             best_scores[index] = puzzle
                             break
 
-        best_scores.sort(key=lambda x: x.num_wrong_facelets, reverse=True)
+        best_scores.sort(key=lambda x: x.error_count, reverse=True)
 
         LOGGER.info(f"Puzzle stats: puzzles with smallest error (number of incorrect values)")
         for index, score in enumerate(best_scores):
             LOGGER.info(
-                f"\t\t puzzle id: {score.puzzle_id} \terrors: {score.num_wrong_facelets} \t puzzle solution: {score.puzzle.submission_solution}")
+                f"\t\t puzzle id: {score.puzzle_id} \terrors: {score.error_count} \t puzzle solution: {score.puzzle.submission_solution}")
         LOGGER.info(f"\n")
 
     def report_metrics_for_generative_results(self, evolutionResultsDTO: EvolutionResultsDTO):
@@ -105,26 +100,26 @@ class MetricsReporter:
                 if len(best_scores) < topx:
                     # init the array
                     best_scores.append(gen_result_puzzle)
-                    best_scores.sort(key=lambda x: x.num_wrong_facelets, reverse=True)
+                    best_scores.sort(key=lambda x: x.error_count, reverse=True)
                 else:
                     # check array of scores to see can we add it
                     for index, top_x_puzzle in enumerate(best_scores):
                         # make sure it hasnt been added by any other generation
                         if not is_puzzle_solution_same(gen_result_puzzle.puzzle, top_x_puzzle.puzzle):
-                            if gen_result_puzzle.num_wrong_facelets < top_x_puzzle.num_wrong_facelets:
+                            if gen_result_puzzle.error_count < top_x_puzzle.error_count:
                                 best_scores[index] = gen_result_puzzle
                                 break
                             else:
-                                if ((gen_result_puzzle.num_wrong_facelets == top_x_puzzle.num_wrong_facelets) &
+                                if ((gen_result_puzzle.error_count == top_x_puzzle.error_count) &
                                         (get_number_of_moves_for_puzzle(gen_result_puzzle.puzzle) <
                                          get_number_of_moves_for_puzzle(top_x_puzzle.puzzle))):
                                     best_scores[index] = gen_result_puzzle
                                     break
 
-        best_scores.sort(key=lambda x: x.num_wrong_facelets, reverse=True)
+        best_scores.sort(key=lambda x: x.error_count, reverse=True)
 
         LOGGER.info(f"Puzzle stats: puzzles with smallest error (number of incorrect values)")
         for index, score in enumerate(best_scores):
             LOGGER.info(
-                f"\t\t puzzle id: {score.puzzle_id} \tsolved: {score.solved} \terrors: {score.num_wrong_facelets} \t puzzle solution: {score.puzzle.submission_solution}")
+                f"\t\t puzzle id: {score.puzzle_id} \tsolved: {score.solved} \terrors: {score.error_count} \t puzzle solution: {score.puzzle.submission_solution}")
         LOGGER.info(f"\n")

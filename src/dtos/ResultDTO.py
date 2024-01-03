@@ -15,5 +15,6 @@ class ResultDTO:
     score: float
     solved: bool
     time_taken: datetime.timedelta
-    num_wrong_facelets: int
     end_state: List[str]
+    error_count: int
+    move_to_error_mapping: list
