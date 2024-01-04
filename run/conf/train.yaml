@@ -9,6 +9,7 @@ data:
   submission_file: submission.csv
 
 config:
+  puzzle_type:
   specific_puzzle:
   generations:
 

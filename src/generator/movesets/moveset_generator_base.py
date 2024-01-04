@@ -1,3 +1,4 @@
+from ast import mod
 import logging
 from abc import abstractmethod
 from pathlib import Path
@@ -16,6 +17,8 @@ class MoveSetGeneratorBase:
     cfg: TrainConfig
     previous_results: ResultsDTO
     specific_puzzle: int
+    puzzle_type: str
+    movesetDTO: MovesetDTO
 
     def __init__(self, training_config: TrainConfig, resultsDTO: ResultsDTO | None):
         self.cfg = training_config
@@ -27,6 +30,7 @@ class MoveSetGeneratorBase:
             Path(self.cfg.data.puzzles_info_file),
             index_col=self.cfg.data.puzzle_info_attributes.puzzle_info_puzzle_type_col_name,
         )
+        self.puzzle_type = self.cfg.config.puzzle_type
 
     @abstractmethod
     def generate_moveset(self) -> MovesetDTO:
@@ -43,3 +47,11 @@ class MoveSetGeneratorBase:
                 previous_result = result
 
         return previous_result
+    def to_csv(self, fname: str = "submission.csv"):
+        puzzle_id = []
+        puzzle_solution = []
+        for puzzle in self.movesetDTO.puzzles:
+            puzzle_id.append(puzzle.puzzle_id)
+            puzzle_solution.append(puzzle.submission_solution)
+        df = pd.DataFrame({'id': puzzle_id, 'moves': puzzle_solution})
+        df.to_csv(fname, index=False)

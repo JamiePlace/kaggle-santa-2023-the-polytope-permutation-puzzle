@@ -2,6 +2,7 @@
 
 import logging
 from typing import Optional
+from tqdm import tqdm
 
 from src.dtos.MovesetDTO import MovesetDTO
 from src.dtos.ResultsDTO import ResultsDTO
@@ -22,7 +23,7 @@ class MetricGenerator:
     puzzle_solver: PuzzleSolverBase
     specific_puzzle: Optional[int]
 
-    def __init__(self, puzzle_solver: PuzzleSolverBase, specific_puzzle):
+    def __init__(self, puzzle_solver: PuzzleSolverBase, specific_puzzle: Optional[int] = None):
         self.puzzle_solver = puzzle_solver
         self.specific_puzzle = specific_puzzle
 
@@ -34,7 +35,8 @@ class MetricGenerator:
 
         results = ResultsDTO()
 
-        for puzzle in ms.puzzles:
+        LOGGER.info(f"--- Generating metrics using MetricGenerator ---")
+        for puzzle in tqdm(ms.puzzles):
             resultDTO = self.puzzle_solver.score_puzzle(puzzle, puzzle.submission_solution)
             if print:
                 MetricsReporter().report_metrics_for_result(resultDTO)

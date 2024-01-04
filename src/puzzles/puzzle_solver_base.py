@@ -100,7 +100,7 @@ class PuzzleSolverBase:
             time_taken=(datetime.datetime.now() - start),
             end_state=state,
             error_count=num_wrong_facelets,
-            move_to_error_mapping=move_to_error_mapping
+            move_to_error_mapping=move_to_error_mapping,
         )
 
         return resultDTO

@@ -47,3 +47,8 @@ class ResultsDTO:
             self.combined_score = self.combined_score + resultDTO.score
             self.results.append(resultDTO)
             self.cumulative_time += resultDTO.time_taken
+    def score(self):
+        score = 0
+        for result in self.results:
+            score += result.score
+        return score

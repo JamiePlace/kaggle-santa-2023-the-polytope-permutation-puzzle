@@ -13,6 +13,7 @@ class DirConfig:
 
 @dataclass
 class RunConfig:
+    puzzle_type: str
     specific_puzzle: int
     generations: int
 
