@@ -5,7 +5,7 @@ from collections import deque
 def get_project_root() -> Path:
     return Path(__file__).parent.parent
 
-def cancel_cube_pairs(moves:str) -> str:
+def cancel_pairs(moves:str) -> str:
     pair = deque()
     group = deque()
     result = deque() 
