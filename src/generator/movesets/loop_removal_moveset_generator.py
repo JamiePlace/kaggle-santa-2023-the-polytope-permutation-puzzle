@@ -4,6 +4,7 @@ from typing import Optional
 
 from sympy.combinatorics import Permutation
 
+from src.utils import cancel_cube_pairs
 from src.dtos.MovesetDTO import MovesetDTO
 from src.dtos.PuzzleDTO import PuzzleDTO
 from src.dtos.ResultsDTO import ResultsDTO
@@ -12,9 +13,9 @@ from src.generator.movesets.moveset_generator_base import MoveSetGeneratorBase
 LOGGER = logging.getLogger()
 
 
-class SimpleMoveSetGenerator(MoveSetGeneratorBase):
+class LoopRemovalMovesetGenerator(MoveSetGeneratorBase):
     """
-    OOTB moveset generator taking moveset from file.
+    Building on SimpleMoveSetGenerator, this class will remove loops from the submission
     """
 
     movesetDTO: MovesetDTO
@@ -23,10 +24,12 @@ class SimpleMoveSetGenerator(MoveSetGeneratorBase):
 
     def __init__(self, cfg, resultsDTO: Optional[ResultsDTO] = None):
         super().__init__(cfg, resultsDTO)
-
-        LOGGER.info(f"--- Generating moveset using SimpleMoveSetGenerator ---")
-
         self.movesetDTO = MovesetDTO(self.solution, self.submission, self.puzzle_info)
+        self.remove_loops()
+
+    def remove_loops(self):
+        LOGGER.info(f"--- Generating moveset using LoopRemovalMovesetGenerator ---")
+
         puzzles = []
         for sol, sub in zip(self.solution.itertuples(), self.submission.itertuples()):
             puzzle = self.__convert_dict_to_puzzle(self.puzzle_info, sol, sub)
@@ -36,23 +39,6 @@ class SimpleMoveSetGenerator(MoveSetGeneratorBase):
         self.movesetDTO.set_puzzles(puzzles)
 
         LOGGER.info(f"--- Generating moveset complete---\n")
-
-    def generate_moveset(self):
-        LOGGER.info(f"--- Generating moveset using SimpleMoveSetGenerator ---")
-
-        move_set = MovesetDTO(self.solution, self.submission, self.puzzle_info)
-
-        puzzles = []
-        for sol, sub in zip(self.solution.itertuples(), self.submission.itertuples()):
-            puzzle = self.__convert_dict_to_puzzle(self.puzzle_info, sol, sub)
-            if puzzle is not None:
-                puzzles.append(puzzle)
-
-        move_set.set_puzzles(puzzles)
-
-        LOGGER.info(f"--- Generating moveset complete---\n")
-
-        return move_set
 
     def __convert_dict_to_puzzle(self, puzzle_info, sol, sub):
         puzzle_id = int(getattr(sol, self.cfg.data.puzzle_attributes.puzzle_id_col_name))
@@ -73,7 +59,8 @@ class SimpleMoveSetGenerator(MoveSetGeneratorBase):
                 return None
 
         sub_solution = getattr(sub, self.cfg.data.submission_attributes.submission_moves_col_name)
-
+        if puzzle_type == "cube":
+            sub_solution = cancel_cube_pairs(sub_solution)
         # store the max length of the puzzle so that we need to find a solution better than..
         max_length = len(sub_solution)
         puzzle = PuzzleDTO(
