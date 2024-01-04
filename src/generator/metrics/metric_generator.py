@@ -24,12 +24,9 @@ class MetricGenerator:
 
     def __init__(self, puzzle_solver: PuzzleSolverBase, specific_puzzle):
         self.puzzle_solver = puzzle_solver
-        if specific_puzzle is not None:
-            self.specific_puzzle = specific_puzzle
-        else:
-            self.specific_puzzle = None
+        self.specific_puzzle = specific_puzzle
 
-    def generate_score(self, ms: MovesetDTO) -> ResultsDTO:
+    def generate_score(self, ms: MovesetDTO, print=False) -> ResultsDTO:
         """
         iterate through all the puzzles and generate their score
         """
@@ -39,7 +36,8 @@ class MetricGenerator:
 
         for puzzle in ms.puzzles:
             resultDTO = self.puzzle_solver.score_puzzle(puzzle, puzzle.submission_solution)
-            MetricsReporter().report_metrics_for_result(resultDTO)
+            if print:
+                MetricsReporter().report_metrics_for_result(resultDTO)
             results.add_result(resultDTO)
 
         return results
