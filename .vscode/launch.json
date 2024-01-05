@@ -1,0 +1,18 @@
+{
+    "version": "0.2.0",
+    "configurations" : [
+
+        {
+            "name": "Python: Reduce Moveset",
+            "type": "python",
+            "request": "launch",
+            "program": "${workspaceFolder}/run/reduce_moveset.py",
+            "cwd": "${workspaceFolder}",
+            "console": "internalConsole",
+            "justMyCode": false,
+            "args": [
+                "config.specific_puzzle=155"
+            ]
+        }
+    ]
+}
