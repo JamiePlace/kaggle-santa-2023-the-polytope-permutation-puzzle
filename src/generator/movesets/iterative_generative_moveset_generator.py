@@ -49,8 +49,8 @@ class IterativeGenerativeMoveSetGenerator(GenerativeMoveSetGenerator):
 
     def generate_move_set_from_previous_results(self):
         new_puzzles = []
-        max_len_solution = 2000
-        max_moves = 100
+        max_len_solution = 50
+        max_moves = 500
 
         pr = self.previous_results.results
 
@@ -59,16 +59,16 @@ class IterativeGenerativeMoveSetGenerator(GenerativeMoveSetGenerator):
             best_move_sets = self.previous_results.results
         else:
             # get the top x% of results and reuse them for 80% of the next new moveset
-            # then we will fill the last 20% with random new stuff to bring in more variety
-            for x in range(9):
-                best_move_sets = best_move_sets + get_x_lowest_error_puzzle_results(pr, len(pr) / 10)
+            # then we will fill the last 100-x% with random new stuff to bring in more variety
+            for x in range(4):
+                best_move_sets = best_move_sets + get_x_lowest_error_puzzle_results(pr, len(pr) / 5)
 
         # take the best last moves and tweak them
-        # for result in self.previous_results.results:
-        for result in best_move_sets:
+        for result in self.previous_results.results:
+            # for result in best_move_sets:
             new_puzzle = self.generate_new_move_from_old_move(result)
             # check solution length, if too long cull it
-            if len(new_puzzle.submission_solution) < max_len_solution:
+            if len(new_puzzle.submission_solution) <= max_len_solution:
                 new_puzzles.append(new_puzzle)
 
         # # make randomly generated moves
@@ -116,6 +116,7 @@ class IterativeGenerativeMoveSetGenerator(GenerativeMoveSetGenerator):
                            num_wildcards=pp.num_wildcards,
                            submission_solution=new_move,
                            max_moves=pp.max_moves)
+        puzzle.previous_state = pp.previous_state
 
         return puzzle
 

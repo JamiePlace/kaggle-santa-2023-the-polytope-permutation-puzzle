@@ -12,6 +12,18 @@ LOGGER = logging.getLogger()
 
 
 class PuzzleSolverBase:
+
+    def get_scoring_method(self, solution, end_state):
+        return sum(not (s == t) for s, t in zip(solution, end_state))
+
+    def is_puzzle_solved(self, num_wrong_facelets, num_wildcards):
+        solved: bool
+        if num_wrong_facelets > num_wildcards:
+            solved = False
+        else:
+            solved = True
+        return solved
+
     def score_puzzle(self, puzzle: PuzzleDTO, sub_solution):
         """Score the solution to a permutation puzzle."""
 
@@ -48,7 +60,9 @@ class PuzzleSolverBase:
             except KeyError:
                 raise ParticipantVisibleError(f"{m} is not an allowed move for {self.puzzle_id}.")
             state = (p ** power)(state)
-            num_wrong_facelets = sum(not (s == t) for s, t in zip(puzzle.solution_state, state))
+            # get the number of incorrect tiles so that we can see how close this iteration/or move brought us closer
+            # to the solution
+            num_wrong_facelets = self.get_scoring_method(puzzle.solution_state, state)
             move_to_error_mapping.append(num_wrong_facelets)
 
         LOGGER.debug(f"end state: \t\t{state}")
@@ -60,13 +74,11 @@ class PuzzleSolverBase:
         LOGGER.debug(f"end state faces: \t{faces} \n")
 
         # Check that submitted moves solve puzzle
-        num_wrong_facelets = sum(not (s == t) for s, t in zip(puzzle.solution_state, state))
+        # get the number of wrong tiles so we can check how close the solution is
+        # num_wrong_facelets = sum(not (s == t) for s, t in zip(puzzle.solution_state, state))
+        num_wrong_facelets = self.get_scoring_method(puzzle.solution_state, state)
 
-        solved: bool
-        if num_wrong_facelets > puzzle.num_wildcards:
-            solved = False
-        else:
-            solved = True
+        solved = self.is_puzzle_solved(num_wrong_facelets, puzzle.num_wildcards)
 
         attempt = 0
         previous_error = num_wrong_facelets

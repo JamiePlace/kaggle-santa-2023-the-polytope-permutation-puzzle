@@ -27,7 +27,7 @@ class MetricGenerator:
         self.puzzle_solver = puzzle_solver
         self.specific_puzzle = specific_puzzle
 
-    def generate_score(self, ms: MovesetDTO, print=False) -> ResultsDTO:
+    def generate_score(self, ms: MovesetDTO, print=False, exit_if_solution_found=False) -> ResultsDTO:
         """
         iterate through all the puzzles and generate their score
         """
@@ -41,6 +41,10 @@ class MetricGenerator:
             if print:
                 MetricsReporter().report_metrics_for_result(resultDTO)
             results.add_result(resultDTO)
+
+            if exit_if_solution_found and resultDTO.solved:
+                results.results = [resultDTO]
+                return results
 
         return results
 
