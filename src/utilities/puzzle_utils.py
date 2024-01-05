@@ -58,14 +58,14 @@ def calculate_cube_face_error(solution: list, state: list, face):
     state_list = state
     assert len(initial_list) == len(state_list)
 
-    solution_face = get_face_face(solution, face)
-    state_face = get_face_face(state, face)
+    solution_face = get_face_from_cube(solution, face)
+    state_face = get_face_from_cube(state, face)
     num_wrong_facelets = sum(not (s == t) for s, t in zip(solution_face, state_face))
 
     return num_wrong_facelets
 
 
-def get_face_face(cube_as_list, face):
+def get_face_from_cube(cube_as_list, face):
     sl = int(len(cube_as_list) / 6)
 
     if face == "d1":
