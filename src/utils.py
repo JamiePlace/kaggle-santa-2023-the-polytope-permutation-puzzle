@@ -16,25 +16,29 @@ def cancel_pairs(moves:str) -> str:
 
         # grab and remove the previous move
         head = pair.pop()
-        # store current move
+        # check if the previous move is the inverse of the current move
+        if head[1:] == move or move[1:]==head:
+            continue
+        # current move
         pair.append(move)
 
         if len(group)<1:
             group.append(head)
+            continue
+
+        # check if previous move is different to the last move of the group
+        if head.replace('-','')[0] != group[-1].replace('-','')[0]:
+            # store the group and start a new one at the previous move
+            result.extend(group)
+            group=deque([head])
+            continue
+
+        inverse_head = '-'+head if len(head)==2 else head[1:]
+        # if we can find an inverse move in the group then remove it
+        if inverse_head in group:
+            group.remove(inverse_head)
         else:
-            # check if previous move is different to the last move of the group
-            if head.replace('-','')[0] != group[-1].replace('-','')[0]:
-                # store the group and start a new one at the previous move
-                result.extend(group)
-                group=deque([head])
-            else:
-                positive_head = False if len(head.split("-")) == 2 else True
-                inverse_head = '-'+head if positive_head else head
-                # if we can find an inverse move in the group then remove it
-                if inverse_head in group:
-                    group.remove(inverse_head)
-                else:
-                    group.append(head)
+            group.append(head)
      
     # Collect whatever is left over from the pairs and groups list
     if len(pair)>0:
