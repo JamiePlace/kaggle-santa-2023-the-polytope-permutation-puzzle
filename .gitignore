@@ -165,4 +165,4 @@ data/*
 outputs/*
 output/*
 run/outputs/*
-run/conf/dir/local.yaml
+./run/conf/dir/local.yaml
