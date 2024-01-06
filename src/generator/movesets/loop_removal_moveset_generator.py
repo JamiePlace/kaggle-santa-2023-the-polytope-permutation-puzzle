@@ -1,14 +1,10 @@
 import logging
-from ast import literal_eval
 from typing import Optional
-
-from sympy.combinatorics import Permutation
-
 from src.utils import cancel_pairs
 from src.dtos.MovesetDTO import MovesetDTO
-from src.dtos.PuzzleDTO import PuzzleDTO
 from src.dtos.ResultsDTO import ResultsDTO
 from src.generator.movesets.moveset_generator_base import MoveSetGeneratorBase
+from src.puzzles.sample_puzzle_solver import SamplePuzzleSolver
 
 LOGGER = logging.getLogger()
 
@@ -36,11 +32,13 @@ class LoopRemovalMovesetGenerator(MoveSetGeneratorBase):
             if puzzle is not None:
                 puzzles.append(puzzle)
 
+
         self.movesetDTO.set_puzzles(puzzles)
 
         LOGGER.info(f"--- Generating moveset complete---\n")
 
     def __convert_dict_to_puzzle(self, puzzle_info, sol, sub):
+        solver = SamplePuzzleSolver()
         puzzle_id = int(getattr(sol, self.cfg.data.puzzle_attributes.puzzle_id_col_name))
         puzzle_type = str(
             getattr(sol, self.cfg.data.puzzle_attributes.puzzle_puzzle_type_col_name)
@@ -59,23 +57,24 @@ class LoopRemovalMovesetGenerator(MoveSetGeneratorBase):
                 return None
 
         sub_solution = getattr(sub, self.cfg.data.submission_attributes.submission_moves_col_name)
+        puzzle = self.generate_puzzle(puzzle_id, puzzle_info, sol, sub_solution)
         if puzzle_type == "cube":
-            sub_solution = cancel_pairs(sub_solution)
-        # store the max length of the puzzle so that we need to find a solution better than..
-        max_length = len(sub_solution)
-        puzzle = PuzzleDTO(
-            puzzle_id=puzzle_id,
-            allowed_moves=self.__get_moves_for_puzzle(puzzle_info, sol),
-            solution_state=sol.solution_state.split(";"),
-            initial_state=sol.initial_state.split(";"),
-            num_wildcards=sol.num_wildcards,
-            submission_solution=sub_solution,
-            max_moves=max_length,
-        )
+            try:
+                new_solution = cancel_pairs(sub_solution)
+                
+                puzzle = self.generate_puzzle(puzzle_id, puzzle_info, sol, new_solution)
+                LOGGER.info(f"puzzle_id: {puzzle_id}")
+                # this will raise an error if the solution is invalid
+                _ = solver.score_puzzle(puzzle, validate=True)
+                LOGGER.info(f"puzzle_id: {puzzle_id}: new solution {new_solution}")
+                sub_solution = new_solution
+
+            except:
+                puzzle = self.generate_puzzle(puzzle_id, puzzle_info, sol, sub_solution)
+        if puzzle_type == "wreath":
+            puzzle = self.generate_puzzle(puzzle_id, puzzle_info, sol, sub_solution)
+        if puzzle_type == "globe":
+            puzzle = self.generate_puzzle(puzzle_id, puzzle_info, sol, sub_solution)
 
         return puzzle
 
-    def __get_moves_for_puzzle(self, puzzle_info, sol):
-        allowed_moves = literal_eval(puzzle_info.loc[sol.puzzle_type, "allowed_moves"])
-        allowed_moves = {k: Permutation(v) for k, v in allowed_moves.items()}
-        return allowed_moves

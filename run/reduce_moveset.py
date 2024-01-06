@@ -1,16 +1,12 @@
 import logging
-import pandas as pd
 from pathlib import Path
 
 import hydra
 
 from src.conf import TrainConfig
-from src.dtos.ResultsDTO import ResultsDTO
 from src.generator.metrics.metric_generator import MetricGenerator
-from src.generator.movesets.loop_removal_moveset_generator import \
-    LoopRemovalMovesetGenerator
-from src.generator.movesets.simple_moveset_generator import \
-    SimpleMoveSetGenerator
+from src.generator.movesets.simple_moveset_generator import SimpleMoveSetGenerator
+from src.generator.movesets.loop_removal_moveset_generator import LoopRemovalMovesetGenerator
 from src.puzzles.sample_puzzle_solver import SamplePuzzleSolver
 
 LOGGER = logging.getLogger(Path(__file__).name)
@@ -26,8 +22,8 @@ logging.basicConfig(
 def main(cfg: TrainConfig):
     LOGGER.info(f"Project name: {PROJECT_NAME} \n")
     # set up initial data
-    simple_moveset_generator: SimpleMoveSetGenerator = SimpleMoveSetGenerator(cfg)
-    loop_removal_moveset_generator: LoopRemovalMovesetGenerator = LoopRemovalMovesetGenerator(cfg)
+    simple_moveset_generator = SimpleMoveSetGenerator(cfg)
+    loop_removal_moveset_generator = LoopRemovalMovesetGenerator(cfg)
 
     metric_generator = MetricGenerator(SamplePuzzleSolver())
     old_resultsDTO = metric_generator.generate_score(simple_moveset_generator.movesetDTO)
@@ -38,7 +34,7 @@ def main(cfg: TrainConfig):
     LOGGER.info(f"New Results: {new_resultsDTO.score()}")
     LOGGER.info(f"--- Finished ---")
     
-    loop_removal_moveset_generator.to_csv("new_submission.csv")
+    loop_removal_moveset_generator.to_csv("submission.csv")
 
     return
 

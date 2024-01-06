@@ -12,7 +12,7 @@ LOGGER = logging.getLogger()
 
 
 class PuzzleSolverBase:
-    def score_puzzle(self, puzzle: PuzzleDTO, sub_solution):
+    def score_puzzle(self, puzzle: PuzzleDTO, validate = False):
         """Score the solution to a permutation puzzle."""
 
         start = datetime.datetime.now()
@@ -20,6 +20,7 @@ class PuzzleSolverBase:
         # Apply submitted sequence of moves to the initial state, from left to right
         moves = puzzle.submission_solution.split(".")
         state = puzzle.initial_state
+        allowed_moves = puzzle.allowed_moves
 
         LOGGER.debug(f"Attempting to solve puzzle: {puzzle.puzzle_id}")
         LOGGER.debug(f"Puzzle: {puzzle.puzzle_id}")
@@ -32,23 +33,27 @@ class PuzzleSolverBase:
         LOGGER.debug(f"initial faces: \t{faces}")
 
         move_to_error_mapping = []
+        # for m in moves:
+        #    power = 1
+        #    try:
+        #        if m[0] == "-":
+        #            m = m[1:]
+        #            power = -1
+        #    except:
+        #        LOGGER.info(f"error cannot get element[0] of string: \t{m}")
+        #        raise ParticipantVisibleError(
+        #            f"error cannot get element[0] of string: \t{m}"
+        #        )
+        #    try:
+        #        p = puzzle.allowed_moves[m]
+        #    except KeyError:
+        #        raise ParticipantVisibleError(f"{m} is not an allowed move for {puzzle.puzzle_id}.")
+        #    state = (p ** power)(state)
+        #    num_wrong_facelets = sum(s != t for s, t in zip(puzzle.solution_state, state))
+        #    move_to_error_mapping.append(num_wrong_facelets)
         for m in moves:
-            power = 1
-            try:
-                if m[0] == "-":
-                    m = m[1:]
-                    power = -1
-            except:
-                LOGGER.info(f"error cannot get element[0] of string: \t{m}")
-                raise ParticipantVisibleError(
-                    f"error cannot get element[0] of string: \t{m}"
-                )
-            try:
-                p = puzzle.allowed_moves[m]
-            except KeyError:
-                raise ParticipantVisibleError(f"{m} is not an allowed move for {self.puzzle_id}.")
-            state = (p ** power)(state)
-            num_wrong_facelets = sum(not (s == t) for s, t in zip(puzzle.solution_state, state))
+            state = self.apply_move(allowed_moves, m, state)
+            num_wrong_facelets = sum(s != t for s, t in zip(puzzle.solution_state, state))
             move_to_error_mapping.append(num_wrong_facelets)
 
         LOGGER.debug(f"end state: \t\t{state}")
@@ -60,13 +65,20 @@ class PuzzleSolverBase:
         LOGGER.debug(f"end state faces: \t{faces} \n")
 
         # Check that submitted moves solve puzzle
-        num_wrong_facelets = sum(not (s == t) for s, t in zip(puzzle.solution_state, state))
+        num_wrong_facelets = sum(s != t for s, t in zip(puzzle.solution_state, state))
 
         solved: bool
         if num_wrong_facelets > puzzle.num_wildcards:
             solved = False
         else:
             solved = True
+
+        if not solved:
+            LOGGER.info(f"{state} does not solve the puzzle.")
+            raise ParticipantVisibleError(f"your solution does not solve the puzzle.")
+
+        if validate:
+            return True
 
         attempt = 0
         previous_error = num_wrong_facelets
@@ -84,7 +96,7 @@ class PuzzleSolverBase:
             solution_used=puzzle.submission_solution,
             error_count=previous_error,
             move_to_error_mapping=previous_error_mapping,
-            attempt=attempt
+            attempt=attempt,
         )
         # for now store the previous state in the puzzle as we only have access to the puzzle on the scoring class here
         # we create the result here so we don't have anything to draw of to get the previous result, unless we pass in
@@ -105,14 +117,21 @@ class PuzzleSolverBase:
 
         return resultDTO
 
-
     def cube_state_to_faces(self, state):
         """Convert a state list to a dictionary of labeled faces."""
         n = int(np.sqrt(len(state) / 6))  # cube_n/n/n
-        n2 = n ** 2
+        n2 = n**2
         labels = f"d{n - 1},f0,r0,f{n - 1},r{n - 1},d0".split(",")
         faces = {}
         for i, l in enumerate(labels):
-            face = state[n2 * i: n2 * (i + 1)]
+            face = state[n2 * i : n2 * (i + 1)]
             faces[l] = np.asarray(face).reshape(n, n).tolist()
         return faces
+
+    def apply_move(self, moves, move, state):
+        m = move
+
+        move_list = moves[m]
+        state = np.array(state)[move_list]
+
+        return state.tolist()
