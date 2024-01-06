@@ -90,6 +90,13 @@ class PuzzleSolverBase:
         if validate:
             return True
 
+        if not solved:
+            LOGGER.info(f"{state} does not solve the puzzle.")
+            raise ParticipantVisibleError(f"your solution does not solve the puzzle.")
+
+        if validate:
+            return True
+
         attempt = 0
         previous_error = num_wrong_facelets
         previous_error_mapping = move_to_error_mapping
