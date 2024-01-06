@@ -4,7 +4,7 @@ from typing import Optional
 
 from sympy.combinatorics import Permutation
 
-from src.utils import cancel_cube_pairs, cancel_pairs
+from src.utils import cancel_pairs
 from src.dtos.MovesetDTO import MovesetDTO
 from src.dtos.PuzzleDTO import PuzzleDTO
 from src.dtos.ResultsDTO import ResultsDTO
@@ -60,7 +60,7 @@ class LoopRemovalMovesetGenerator(MoveSetGeneratorBase):
 
         sub_solution = getattr(sub, self.cfg.data.submission_attributes.submission_moves_col_name)
         if puzzle_type == "cube":
-            sub_solution = cancel_cube_pairs(sub_solution)
+            sub_solution = cancel_pairs(sub_solution)
         # store the max length of the puzzle so that we need to find a solution better than..
         max_length = len(sub_solution)
         puzzle = PuzzleDTO(
