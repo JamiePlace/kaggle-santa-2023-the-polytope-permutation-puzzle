@@ -63,10 +63,8 @@ class LoopRemovalMovesetGenerator(MoveSetGeneratorBase):
                 new_solution = cancel_pairs(sub_solution)
                 
                 puzzle = self.generate_puzzle(puzzle_id, puzzle_info, sol, new_solution)
-                LOGGER.info(f"puzzle_id: {puzzle_id}")
                 # this will raise an error if the solution is invalid
                 _ = solver.score_puzzle(puzzle, validate=True)
-                LOGGER.info(f"puzzle_id: {puzzle_id}: new solution {new_solution}")
                 sub_solution = new_solution
 
             except:

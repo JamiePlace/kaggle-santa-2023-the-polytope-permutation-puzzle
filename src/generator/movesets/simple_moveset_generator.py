@@ -87,8 +87,3 @@ class SimpleMoveSetGenerator(MoveSetGeneratorBase):
         )
 
         return puzzle
-
-    def __get_moves_for_puzzle(self, puzzle_info, sol):
-        allowed_moves = literal_eval(puzzle_info.loc[sol.puzzle_type, "allowed_moves"])
-        allowed_moves = {k: Permutation(v) for k, v in allowed_moves.items()}
-        return allowed_moves

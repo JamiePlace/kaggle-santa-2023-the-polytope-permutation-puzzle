@@ -84,18 +84,11 @@ class PuzzleSolverBase:
         solved = self.is_puzzle_solved(num_wrong_facelets, puzzle.num_wildcards)
 
         if not solved:
-            LOGGER.info(f"{state} does not solve the puzzle.")
             raise ParticipantVisibleError(f"your solution does not solve the puzzle.")
 
         if validate:
             return True
 
-        if not solved:
-            LOGGER.info(f"{state} does not solve the puzzle.")
-            raise ParticipantVisibleError(f"your solution does not solve the puzzle.")
-
-        if validate:
-            return True
 
         attempt = 0
         previous_error = num_wrong_facelets
