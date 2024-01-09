@@ -1,6 +1,9 @@
 import logging
 from pathlib import Path
+from pandas._libs.hashtable import value_count
 from rich import print
+from collections import Counter
+import numpy as np
 
 import hydra
 
@@ -19,12 +22,9 @@ logging.basicConfig(
 def main(cfg: TrainConfig):
     LOGGER.info(f"Project name: {PROJECT_NAME} \n")
     puzzle_generator = PuzzleGenerator(cfg)
-    puzzles = puzzle_generator.fetch(0)
-    print(puzzles[0])
-    puzzles[0].apply_move("r1")
-    puzzles[0].apply_move("-f1")
-    print(puzzles[0])
-    print(puzzles[0].previous_states)
+    puzzles = puzzle_generator.fetch()
+    for puzzle in puzzles:
+        print(puzzle.pid, puzzle.validate())
     return
 
 

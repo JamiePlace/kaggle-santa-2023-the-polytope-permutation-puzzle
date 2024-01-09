@@ -1,10 +1,9 @@
 import logging
 from dataclasses import dataclass
-from typing import List
 
 import pandas as pd
 
-from src.dtos.PuzzleDTO import PuzzleDTO
+from src.conf import TrainConfig
 
 LOGGER = logging.getLogger()
 
@@ -14,24 +13,18 @@ class MovesetDTO:
     """
     defines the data required to score a puzzle
     """
-    solution: pd.DataFrame
-    submission: pd.DataFrame
-    puzzle_info: pd.DataFrame
-    puzzles: List[PuzzleDTO]
+    moves: list
 
-    series_id_column_name: str
-    moves_column_name: str
-    allowed_moves_column_name: str
+    def __init__(self, cfg: TrainConfig, pid: int, empty: bool = False):
+        self.cfg = cfg
+        if empty:
+            self.moves = []
+        else:
+            solution = pd.read_csv(self.cfg.data.submission_file)
+            solution = solution.loc[solution["id"] == pid]
+            self.moves = solution["moves"].values[0].split(".")
 
-    def __init__(self, solution, submission, puzzle_info):
-        self.solution = solution
-        self.submission = submission
-        self.puzzle_info = puzzle_info
-        self.puzzles = []
+    def __iter__(self):
+        return iter(self.moves)
 
-        self.series_id_column_name = "id"
-        self.moves_column_name = "moves"
-        self.allowed_moves_column_name = "allowed_moves"
 
-    def set_puzzles(self, puzzles):
-        self.puzzles = puzzles

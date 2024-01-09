@@ -24,6 +24,18 @@
             "args": [
                 "config.specific_puzzle=155"
             ]
+        },
+        {
+            "name": "Python: Reduce Moveset - puzzle type cube",
+            "type": "python",
+            "request": "launch",
+            "program": "${workspaceFolder}/run/puzzle_test.py",
+            "cwd": "${workspaceFolder}",
+            "console": "internalConsole",
+            "justMyCode": false,
+            "args": [
+                "config.specific_puzzle=155"
+            ]
         }
     ]
 }

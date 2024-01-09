@@ -16,6 +16,7 @@ class RunConfig:
     puzzle_type: str
     specific_puzzle: int
     generations: int
+    init_moves: bool
 
 
 class DataFilesAttributesPuzzle:

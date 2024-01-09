@@ -12,5 +12,6 @@ config:
   puzzle_type:
   specific_puzzle:
   generations:
+  init_moves: true
 
 

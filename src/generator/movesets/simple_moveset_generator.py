@@ -1,8 +1,5 @@
 import logging
-from ast import literal_eval
 from typing import Optional
-
-from sympy.combinatorics import Permutation
 
 from src.dtos.MovesetDTO import MovesetDTO
 from src.dtos.PuzzleDTO import PuzzleDTO
