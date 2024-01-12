@@ -1,15 +1,16 @@
 from pathlib import Path
+from typing import List
 from collections import deque
 
 
 def get_project_root() -> Path:
     return Path(__file__).parent.parent
 
-def cancel_pairs(moves:str) -> str:
+def cancel_pairs(moves:List[str]) -> str:
     pair = deque()
     group = deque()
     result = deque() 
-    for move in moves.split('.'):
+    for move in moves:
         if len(pair)<1:
             pair.append(move)
             continue

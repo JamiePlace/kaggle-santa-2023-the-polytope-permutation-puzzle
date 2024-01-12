@@ -40,6 +40,7 @@ class PuzzleGenerator:
         self.puzzle_info = self.puzzle_info.set_index("puzzle_type")
 
     def fetch(self, pid: Optional[int] = None) -> List[PuzzleDTO]:
+        LOGGER.info(f"-- Generating Puzzles --")
         if self.cfg.config.specific_puzzle is not None:
             pid = self.cfg.config.specific_puzzle
         if pid is not None:
@@ -57,7 +58,7 @@ class PuzzleGenerator:
         return output.tolist()
 
     def __generate_puzzle(self, pid: int) -> PuzzleDTO:
-        ptype = self.puzzles.loc[pid, "puzzle_type"]
+        ptype = self.puzzles.loc[pid, "puzzle_type"].split("_")[0]
         puzzle = PuzzleDTO(
             pid=pid,
             ptype=ptype,
@@ -78,6 +79,7 @@ class PuzzleGenerator:
         puzzle_type = self.puzzles.loc[pid, "puzzle_type"]
         allowed_moves = ast.literal_eval(self.puzzle_info.loc[puzzle_type, "allowed_moves"])
         allowed_moves = self.__init_reverse_moves(allowed_moves)
+        allowed_moves = {k: np.array(v) for k, v in allowed_moves.items()}
         return allowed_moves
 
     def __init_reverse_moves(self, moves):
