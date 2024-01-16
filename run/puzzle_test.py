@@ -5,6 +5,7 @@ from rich import print
 import hydra
 
 from src.conf import TrainConfig
+from src.utils import scoring_function
 from src.generator.puzzle_generator import PuzzleGenerator
 LOGGER = logging.getLogger(Path(__file__).name)
 PROJECT_NAME = "Santa-2023"
@@ -24,7 +25,12 @@ def main(cfg: TrainConfig):
         print(puzzle.pid, puzzle.validate())
         print(puzzle)
         print(puzzle.previous_states)
-    return
+    i_state = puzzles[0].solution_state
+    e_state = puzzles[0].solution_state
+    
+    print(scoring_function(e_state, i_state))
+
+    return puzzles
 
 
 if __name__ == "__main__":

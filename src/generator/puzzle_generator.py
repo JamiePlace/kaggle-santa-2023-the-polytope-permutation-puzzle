@@ -39,7 +39,7 @@ class PuzzleGenerator:
             ]
         self.puzzle_info = self.puzzle_info.set_index("puzzle_type")
 
-    def fetch(self, pid: Optional[int] = None) -> List[PuzzleDTO]:
+    def fetch_solutions(self, pid: Optional[int] = None) -> List[PuzzleDTO]:
         LOGGER.info(f"-- Generating Puzzles --")
         if self.cfg.config.specific_puzzle is not None:
             pid = self.cfg.config.specific_puzzle

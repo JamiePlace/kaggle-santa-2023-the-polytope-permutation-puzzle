@@ -16,6 +16,14 @@ class PuzzleTools:
     def __init__(self):
         pass
 
+    def test_moves(self, moves: str) -> str:
+        moves = moves.split(".") # type: ignore
+        state = np.array(self.state.split(";"))
+        for move in moves:
+            move_list = self.allowed_moves[move]
+            state = state[move_list]
+        return ";".join(state)
+
     def apply_moves(self, moves: str):
         moves = moves.split(".")  # type: ignore
         start_state = self.state

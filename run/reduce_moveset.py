@@ -22,7 +22,7 @@ logging.basicConfig(
 def main(cfg: TrainConfig):
     LOGGER.info(f"Project name: {PROJECT_NAME} \n")
     puzzle_generator = PuzzleGenerator(cfg)
-    puzzles = puzzle_generator.fetch()
+    puzzles = puzzle_generator.fetch_solutions()
     # set up initial data
     simple_moveset_generator = SimpleMoveSetGenerator(cfg, puzzles)
     simple_metric = MetricGenerator(simple_moveset_generator)

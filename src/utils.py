@@ -1,3 +1,4 @@
+import numpy as np
 from pathlib import Path
 from typing import List
 from collections import deque
@@ -60,3 +61,48 @@ def cancel_pairs(moves:List[str]) -> str:
         result.extend(group)
         
     return '.'.join(result)
+
+def n_gram_array(array, n):
+    n_gram_array = np.empty((len(array),n), dtype='<U1')
+    for i in range(n):
+        n_gram_array[:,i] = np.roll(array,i)
+    return n_gram_array
+
+def scoring_function(target_state: str, current_state: str) -> float:
+    target_state_array: np.ndarray = np.array(target_state.split(";"))
+    current_state_array: np.ndarray = np.array(current_state.split(";"))
+    score = []
+    for i in range(1, 10):
+        target_ngram = np.array(list(zip(n_gram_array(target_state_array, i)))).flatten()
+        current_ngram = np.array(list(zip(n_gram_array(current_state_array, i)))).flatten()
+        n_gram_score = np.sum(target_ngram == current_ngram)/len(target_ngram)
+        score.append(n_gram_score)
+    return np.mean(score) # type: ignore
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
